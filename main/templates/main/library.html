@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block extra_head_content %}
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h2>Library</h1>
+<link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
+<div class="mangas">
+{% for manga in library %}
+	<div class="manga">
+	<img class="manga-cover" src="{% static manga.cover %}" width="130" height="180" />
+	<div class="manga-name">{{ manga }}</div>
+	</div>
+{% endfor %}
+</div>
+{% endblock  %}

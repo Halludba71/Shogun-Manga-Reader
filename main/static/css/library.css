@@ -1,0 +1,15 @@
+img.manga-cover{
+  border-radius: 6%;
+}
+
+.manga-name{
+  font-weight: bold;
+}
+
+.mangas{
+  margin: 0 auto;
+  display: grid;
+  max-width: 10000px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+}
