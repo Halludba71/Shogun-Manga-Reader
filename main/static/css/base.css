@@ -16,7 +16,8 @@
 
 body {
     color:#748899;
-    background-color: #0b1622;
+    /* background-color: #0b1622; old one */
+    background-color: #101013;
     margin: 0;
     padding: 0;
 }
@@ -46,7 +47,8 @@ h1 {
     width: 60px;
     height: 100vh;
     position: fixed;
-    background-color: var(--bg-primary);
+    /* background-color: var(--bg-primary); old */
+    background-color: #141418;
 }
 
 .navbar-nav{

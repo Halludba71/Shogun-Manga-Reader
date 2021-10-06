@@ -1,1 +1,28 @@
-<h2>{{ comic }}</h2>
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block extra_head_content %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/comic.css' %}">
+    {{ block.super }}
+{% endblock %}
+
+{% block content %} 
+<!-- Put the manga name on the right of the cover as well -->
+<div class="manga-info">
+    <img class="manga-cover" src="{% static comic.cover %}" alt="" width="176" height="264.26">
+    <h1  class="manga-name">{{comic}}</h1>
+    <h5 class="manga-description">
+        {{comic.description}}
+    </h5>
+    <!-- <h1>Chapters</h1> -->
+</div>
+<br>
+<div class="manga-chapters">
+    <h2>Chapters</h2>
+</div>
+   
+    
+<link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
+
+{% endblock  %}
