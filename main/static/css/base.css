@@ -1,11 +1,17 @@
+
 :root {
-    font-size: 16px;
     font-family: 'Open Sans';
     --text-primary: #b6b6b6;
     --text-secondary: #ececec;
     --bg-primary:#152232;
     --bg-secondary:#141418;
 
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-display: swap;
+    src: url('OpenSans-Bold.ttf') format('truetype');
 }
 
 body {

@@ -2,20 +2,30 @@
 {% load static %}
 
 {% block extra_head_content %}
-    
+
     <link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
     {{ block.super }}
 {% endblock %}
 
 {% block content %}
-<h2>Library</h1>
+<h2>Library</h2>
 <link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
-<div class="mangas">
-{% for manga in library %}
-	<div class="manga">
-	<img class="manga-cover" src="{% static manga.cover %}" width="130" height="180" />
-	<div class="manga-name">{{ manga }}</div>
-	</div>
+
+<div class="books">
+{% for book in library %}
+
+    {% if book.type == "Novel" %}
+      <div class="book">
+      <a href="../novel/{{ book.id }}"><img class="book-cover" src="{% static book.cover %}" width="130" height="180" /></a>
+    	<div class="book-name">{{ book }}</div>
+    	</div>
+    {% elif book.type == "Manga" %}
+      <div class="book">
+      <a href="../comic/{{ book.id }}"><img class="book-cover" src="{% static book.cover %}" width="130" height="180" /></a>
+    	<div class="book-name">{{ book }}</div>
+    	</div>
+    {% endif %}
+
 {% endfor %}
 </div>
 {% endblock  %}

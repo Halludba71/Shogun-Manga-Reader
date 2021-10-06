@@ -1,12 +1,12 @@
-img.manga-cover{
+img.book-cover{
   border-radius: 6%;
 }
 
-.manga-name{
+.book-name{
   font-weight: bold;
 }
 
-.mangas{
+.books{
   margin: 0 auto;
   display: grid;
   max-width: 10000px;

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import manga
+from .reader import *
 # Create your views here.
 
 def redirect_view(response):
@@ -13,3 +14,12 @@ def library(response):
 
 def browse(response):
     return render(response, "main/browse.html")
+
+def novel(response, id):
+    # content = epub2text('E:\Abdullah\Code\Python\Computer Science  NEA\master\Shogan-Manga-Reader-main\main\book2.epub')
+    novel = manga.objects.get(id=id)
+    return render(response, "main/novel.html", {"novel":novel})
+
+def comic(response, id):
+    comic = manga.objects.get(id=id)
+    return render(response, "main/comic.html", {"comic":comic})

@@ -14,6 +14,10 @@ the identifier is then assigned like so manga [ cover: identieer]
 class manga(models.Model):
 	title = models.TextField(default='', blank=True)
 	cover = models.TextField(default='', blank=True)
-
+	options = [
+	('Manga', 'Manga'),
+	('Novel', 'Novel')
+	]
+	type = models.CharField(max_length=6,choices=options, default='Manga')
 	def __str__(self):
 		return self.title
