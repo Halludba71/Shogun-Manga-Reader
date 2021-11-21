@@ -21,6 +21,7 @@
     	</div>
     {% elif book.type == "Manga" %}
       <div class="book">
+        <!-- This will cause issues later on since when you try to read manga not in the database -->
       <a href="../comic/{{ book.id }}"><img class="book-cover" src="{% static book.cover %}" width="130" height="180" /></a>
     	<div class="book-name">{{ book }}</div>
     	</div>

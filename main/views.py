@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import manga
-from .reader import *
+# from .reader import * # This line is currently not needed
 # Create your views here.
 
 def redirect_view(response):
