@@ -12,9 +12,10 @@
 <div class="manga-info">
     <img class="manga-cover" src="{% static comic.cover %}" alt="" width="176" height="264.26">
     <h1  class="manga-name">{{comic}}</h1>
-    <h5 class="manga-description">
+    <h3>By {{comic.author}}</h3>
+    <h4 class="manga-description">
         {{comic.description}}
-    </h5>
+    </h4>
     <!-- <h1>Chapters</h1> -->
 </div>
 <br>

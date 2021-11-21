@@ -4,6 +4,12 @@ img.book-cover{
 
 .book-name{
   font-weight: bold;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 140px;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
 }
 
 .books{

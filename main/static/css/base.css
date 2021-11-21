@@ -15,6 +15,7 @@
 }
 
 body {
+
     color:#748899;
     /* background-color: #0b1622; old one */
     background-color: #101013;
@@ -91,5 +92,15 @@ h1 {
 }
 
 .browse:hover{
+    filter: invert(64%) sepia(80%) saturate(4587%) hue-rotate(190deg) brightness(98%) contrast(92%);
+}
+
+.extensions{
+    filter: invert(60%) sepia(80%) saturate(913%) hue-rotate(166deg) brightness(87%) contrast(2%);
+    padding-left: 0px;
+    padding-top: 15px;
+}
+
+.extensions:hover{
     filter: invert(64%) sepia(80%) saturate(4587%) hue-rotate(190deg) brightness(98%) contrast(92%);
 }

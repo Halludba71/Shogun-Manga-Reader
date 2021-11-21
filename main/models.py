@@ -24,10 +24,17 @@ class manga(models.Model):
 	chapters = models.TextField(default='',blank=True,max_length=None)
 	categories = models.TextField(default="All,")
 	source = models.TextField(default="", blank=True)
-	
+	author = models.TextField(default="", blank=True)
 	def __str__(self):
 		return self.title
 
+class extension(models.Model):
+	name = models.TextField(default="",blank=True)
+	installed = models.BooleanField(default=False)
+
+"""
+The below items aren't needed for now
+"""
 class sources(models.Model):
 	name = models.TextField(default='', blank=True)
 

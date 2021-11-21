@@ -6,6 +6,7 @@ urlpatterns = [
     path("", views.redirect_view, name="redirect"),
     path("library/", views.library, name="library"),
     path("browse/", views.browse, name="browse"),
+    path("extensions/", views.extensions, name="extensions"),
     path("novel/<int:id>", views.novel, name="novel"),
     path("comic/<int:id>", views.comic, name="comic")
 ]
