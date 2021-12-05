@@ -1,0 +1,40 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block extra_head_content %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/extensions.css' %}">
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h2>Extensions</h2>
+<div class="extension_list">
+<h3>Installed:</h3>
+{% for installed_extension in installed_extensions %}
+    <p>{{ installed_extension }}</p>
+{% endfor %}
+</div>
+<br>
+<div class="extension_list">
+<h3>All:</h3>
+{% for extension in all %}
+    <div class="row">
+        <div class="extension">
+            <img src="{{ extension.logo }}" alt="logo" width="35" height="35">  
+            <p>{{ extension.Name }}</p> 
+        </div>
+        <button type="button" class="install-button">
+            <span>Install</span>
+        </button>
+        {% comment %} <div class="install-button">
+        <a href="https://google.com">
+            <p>Install</p>
+        </a>
+        </div>   {% endcomment %}
+    </div>
+  
+{% endfor %}
+</div>
+{% endblock  %}

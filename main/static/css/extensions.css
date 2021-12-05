@@ -1,0 +1,45 @@
+
+.extension_list{
+    overflow: hidden;
+    margin: auto;
+    padding: 20px;
+    max-width: 75%;
+    border-radius: 10px;
+    background-color:#141418;
+}
+
+.extension{
+    display: flex;
+    padding-bottom: 20px;
+    /* padding-right: 50rem; */
+    align-items: flex-start;
+}
+
+.extension img{
+    padding-right: 20px;
+}
+
+.row{
+    display: flex;
+    align-items: flex-start;
+}
+
+.install-button{
+    /* border-radius: 10px;
+    background-color: #0a84ec;*/
+    margin-left: auto;
+    display: inline-flex;
+    height: 20px;
+    padding: 0;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    font-size: 16px;
+    color:#748899;
+    font-weight: 600;
+    background-color: #141418;
+}
+
+.install-button:hover{
+    color: #0a84ec;
+}
