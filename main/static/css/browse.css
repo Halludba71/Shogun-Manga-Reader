@@ -1,0 +1,9 @@
+
+.search_box{
+    padding: 10px;
+    background-color: #141418;
+    color: white;
+    outline: none;
+    border: 1px solid #748899;
+    border-radius: 10px;
+}

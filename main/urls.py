@@ -8,5 +8,6 @@ urlpatterns = [
     path("browse/", views.browse, name="browse"),
     path("extensions/", views.extensions, name="extensions"),
     path("novel/<int:id>", views.novel, name="novel"),
-    path("comic/<int:id>", views.comic, name="comic")
+    path("comic/<int:inLibrary>/<int:id>", views.comic, name="comic"),
+    path("read/<int:inLibrary>/<int:comicId>/<int:chapterId>", views.read, name="read")
 ]

@@ -21,9 +21,29 @@
 <br>
 <div class="manga-chapters">
     <h2>Chapters</h2>
+    <table>
+        {% for chapter in comic.chapters_to_arr %}
+            <tr>
+                <td>
+                    <input type="checkbox">
+                </td>
+                <td>
+                    <a href="/read/1/9/{{ chapter.index}}">
+                        <div class="chapterLink">
+                            <p>{{ chapter.name }}</p>
+                        </div>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    
+                
+    
+
 </div>
    
     
-<link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
+{% comment %} <link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}"> {% endcomment %}
 
 {% endblock  %}

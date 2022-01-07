@@ -1,0 +1,121 @@
+:root {
+    font-family: 'Open Sans';
+    --text-primary: #b6b6b6;
+    --text-secondary: #ececec;
+    --bg-primary:#152232;
+    --bg-secondary:#141418;
+
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-display: swap;
+    src: url('OpenSans-Bold.ttf') format('truetype');
+}
+
+/* .back img{
+    filter: invert(60%) sepia(80%) saturate(913%) hue-rotate(166deg) brightness(99%) contrast(2%);
+} */
+
+body {
+
+    color:#748899;
+    /* background-color: #0b1622; old one */
+    background-color: #101013;
+    margin: 0;
+    padding: 0;
+}
+
+body::-webkit-scrollbar{
+    height: 0.5rem;
+    width: 0.5rem;
+}
+
+body::-webkit-scrollbar-track{
+    background: #1e1e24;
+}
+
+body::-webkit-scrollbar-thumb{
+    background: #6649b8;
+}
+
+main {
+    margin-left: 5rem;
+    padding: 0rem;
+    
+}
+
+header{
+    display: flex;
+    padding: 2px 1%;
+    background-color: #222228;
+    align-items:center ;
+    color: floralwhite;
+    position: fixed;
+    width: 100%;
+    top: -69px;
+    will-change: top;
+    transition: top 750ms;
+    /* visibility: hidden; */
+}
+
+.hoverToDisplay{
+    width: 100%;
+    display:flex;
+    height: 70px;
+    /* background-color: fuchsia; */
+    position: fixed;
+}
+
+.hoverToDisplay:hover + header,
+.hoverToDisplay:focus{
+    /* transition: 1s; */
+    top: 0px;
+}
+
+header:hover{
+    top:0px;
+    /* transition: 1s; */
+    /* visibility: visible; */
+}
+
+/* .image-container{
+    display: flex;
+    margin: auto;
+    height: 880px;
+    padding: 10px;
+} */
+
+.image.hide{
+    display: none;
+}
+
+.image{
+    display:flex;
+    justify-content: center;
+    height: 98%;
+    /* padding-top: 2%; */
+}
+
+.image img{
+    height:100%;
+}
+
+.setting-button{
+    background-color: #363738;
+    margin-left: auto;
+    margin-right: 20px;
+    border: 5px solid #363738;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.setting-button:hover{
+    transition: 0.2s ease-in;
+    border: 5px solid #262729;
+    background-color: #262729;
+}
+
+
