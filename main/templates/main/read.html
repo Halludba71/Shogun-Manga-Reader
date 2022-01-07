@@ -1,0 +1,68 @@
+{% load static %}
+<html>
+<head>
+    {% block extra_head_content %}
+    <!-- Currently using base.css replace with read.css later on -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/read.css' %}">
+    {% endblock %}
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/samurai.svg' %}" />
+    <title>{{chapter.name}}</title>
+
+</head>
+<body>
+    <div class="hoverToDisplay"></div>
+    <header>
+        <a href="javascript:history.back()" class="back">
+            <img src="{% static 'images/back.png' %}" width="40" height="40" >
+        </a>
+        <h3>{{chapter.name}}</h3>
+        <button class="setting-button">
+            <img src="{% static 'images/setting.svg' %}" alt="">
+        </button>
+    </header>
+    <main>
+        <!-- NO need to make this a base template since this will not include the side bar -->
+        <div class="image-container">
+            {% for image in images %}  
+                {% if forloop.counter0 == 0%}
+                    <div class="image">
+                        <img src="{{image}}">
+                    </div>
+  
+                {% else %}
+                    <div class="image hide">
+                        <img src="{{image}}">
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </main>
+    <script>
+        var images = document.getElementsByClassName("image");
+        var currentImage = 0;
+        var length = images.length;
+        
+        document.body.addEventListener('keydown', function(event) {
+            const key = event.key;
+            switch (key) {
+                case "ArrowLeft":
+                    console.log('Left');
+                    if (currentImage != 0){
+                        images[currentImage].className = "image hide";
+                        currentImage -= 1;
+                        images[currentImage].className = "image";
+                    }
+                    break;
+                case "ArrowRight":
+                    console.log('Right');
+                    if (currentImage != length-1){
+                        images[currentImage].className = "image hide";
+                        currentImage += 1;
+                        images[currentImage].className = "image";
+                    }
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>

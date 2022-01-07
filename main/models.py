@@ -1,5 +1,5 @@
 from django.db import models
-
+import json
 # Create your models here.
 
 """
@@ -21,17 +21,24 @@ class manga(models.Model):
 	]
 	type = models.CharField(max_length=6,choices=options, default='Manga')
 	description = models.TextField(default=None, blank=True)
-	chapters = models.TextField(default='',blank=True,max_length=None)
+	chapters = models.TextField(default='',blank=True)
 	categories = models.TextField(default="All,")
 	source = models.TextField(default="", blank=True)
 	author = models.TextField(default="", blank=True)
+	
+	def chapters_to_arr(self):
+		return json.loads(self.chapters)
+		
 	def __str__(self):
 		return self.title
 
 class extension(models.Model):
-	name = models.TextField(default="",blank=True)
-	installed = models.BooleanField(default=False)
-
+	name = models.TextField(default="")
+	path = models.TextField(default="")
+	
+	def __str__(self):
+		return self.name
+		
 """
 The below items aren't needed for now
 """

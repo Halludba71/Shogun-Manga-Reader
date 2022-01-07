@@ -1,7 +1,18 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 
+{% block extra_head_content %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/browse.css' %}">
+    {{ block.super }}
+{% endblock %}
 
 {% block content %}
 <h2>Browse</h2>
+
+<form action="." method="get">
+    <input type="text" id="search_box" name="search_box" placeholder="Search Manga..." required=True class="search_box">
+
+    </form>
 {% endblock  %}
