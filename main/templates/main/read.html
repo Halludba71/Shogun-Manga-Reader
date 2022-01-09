@@ -16,32 +16,47 @@
             <img src="{% static 'images/back.png' %}" width="40" height="40" >
         </a>
         <h3>{{chapter.name}}</h3>
-        <button class="setting-button">
+        <button class="setting-button" onclick="showSettings()">
             <img src="{% static 'images/setting.svg' %}" alt="">
         </button>
     </header>
     <main>
+        <div class="settingsContainer">
+            <div class="settings" id="settings">
+                
+            </div>
+        </div>
+        
         <!-- NO need to make this a base template since this will not include the side bar -->
         <div class="image-container">
             {% for image in images %}  
-                {% if forloop.counter0 == 0%}
-                    <div class="image">
-                        <img src="{{image}}">
-                    </div>
-  
-                {% else %}
-                    <div class="image hide">
-                        <img src="{{image}}">
-                    </div>
-                {% endif %}
+            {% if forloop.counter0 == 0%}
+            <div class="image">
+                <img src="{{image}}">
+            </div>
+            
+            {% else %}
+            <div class="image hide">
+                <img src="{{image}}">
+            </div>
+            {% endif %}
             {% endfor %}
         </div>
+        
     </main>
     <script>
         var images = document.getElementsByClassName("image");
         var currentImage = 0;
         var length = images.length;
         
+        function showSettings() {
+            var settings = document.getElementById("settings");
+            if (settings.className == "settings"){
+                settings.className = "settings show";
+            } else if (settings.className == "settings show"){
+                settings.className = "settings";
+            }
+        }
         document.body.addEventListener('keydown', function(event) {
             const key = event.key;
             switch (key) {

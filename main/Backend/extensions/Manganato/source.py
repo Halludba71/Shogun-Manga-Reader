@@ -3,7 +3,7 @@ import re
 from bs4 import BeautifulSoup
 import os
 import base64
-proxy = "https://proxy.f-ck.me/"
+proxy = "/bypass/"
 
 def SearchManga(query):
     """
@@ -53,7 +53,7 @@ def GetImageLinks(page_url):
             index = lines.index(line)
     images = lines[index+1]
     soup = BeautifulSoup(images, 'html.parser')
-    urls = [imageToBase64(image["src"]) for image in soup.findAll("img")]
+    urls = [proxy+image["src"] for image in soup.findAll("img")]
     # urls = [proxy+image["src"] for image in soup.findAll("img")] - the previous url
     return urls
 

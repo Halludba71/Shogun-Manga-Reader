@@ -4,6 +4,7 @@ from .models import manga, extension
 from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.download_extensions import download_extension
 from main.Backend.extensions.search_manga import search
+import requests
 # from .reader import * # This line is currently not needed
 # Create your views here.
 
@@ -59,3 +60,15 @@ def read(response, inLibrary, comicId, chapterId):
 
     return render(response, "main/read.html", {"comic": comic, "chapter": chapter, "images": images})
     # return render(response, "main/read.html", {"comic": comic, "chapter": chapter})
+
+def bypass(response, imageUrl):
+    print(type(imageUrl))
+    headers = {
+        'Referer': "https://readmanganato.com/",
+    }
+    # r = requests.get(imageUrl, headers=headers)
+    
+    imageData = (requests.get(imageUrl, headers=headers)).content
+    # print(imageData)
+    return HttpResponse(imageData, content_type="image/png")
+    # return HttpResponse("hello")
