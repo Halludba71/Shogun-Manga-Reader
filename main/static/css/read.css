@@ -99,6 +99,7 @@ header:hover{
 
 .image img{
     height:100%;
+    z-index: -1;
 }
 
 .setting-button{
@@ -120,15 +121,18 @@ header:hover{
 
 .settings{
     /* float: right; */
-    width: 200px;
+    width: 243px;
     height: 275px;
     margin-right: -300px;
-    background-color: #6649b8;
+    background-color: #222228;
+    color: floralwhite;
     /* margin-top: 80px; */
     /* margin-right: -275px; */
     /* margin-left: auto; */
     border-radius: 10px;
     transition: margin-right 750ms;
+    padding-left: 2px;
+    border: 14px solid #222228;
 }
 
 .settingsContainer{
@@ -141,4 +145,65 @@ header:hover{
     margin-right: 30px;
 }
 
+.settings h3{
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+}
 
+.settings hr{
+    color: #262729;
+    /* border-top: 3px solid #262729; */
+}
+
+.reading-style button{
+    cursor: pointer;
+    box-shadow: none;
+    background-color: #363738;
+    /* margin-left: auto;
+    margin-right: 30px; */
+    border: 5px solid #363738;
+    padding: 1px;
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: none;
+    color: #ececec;
+}
+
+.reading-style button:hover{
+    transition: 0.2s ease-in;
+    border: 5px solid #262729;
+    background-color: #262729;
+}
+
+.reading-style-buttons{
+    padding-top: 10px;
+}
+
+.page-layout button{
+    cursor: pointer;
+    box-shadow: none;
+    background-color: #363738;
+    /* margin-left: auto;
+    margin-right: 30px; */
+    border: 5px solid #363738;
+    padding: 1px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 5px;
+    box-shadow: none;
+    color: #ececec;
+}
+
+.page-layout button:hover{
+    transition: 0.2s ease-in;
+    border: 5px solid #262729;
+    background-color: #262729;
+}
+
+.page-layout-buttons{
+    padding-top: 10px;
+}
+
+.page-layout{
+    margin-top: 5px;
+}

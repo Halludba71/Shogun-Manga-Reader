@@ -23,7 +23,34 @@
     <main>
         <div class="settingsContainer">
             <div class="settings" id="settings">
-                
+                <div class="reading-style">
+                    <h3>Reading Style</h3>
+                    <div class="reading-style-buttons">
+                        <button class="left-to-right" onclick="LeftToRight()">
+                            Left-to-right
+                        </button>
+                        <button class="Right-to-left" onclick="RightToLeft()">
+                            Right-to-left
+                        </button>
+                        <button class="vertical">
+                            Vertical
+                        </button>
+                    </div>
+                </div>
+                <div class="page-layout">
+                    <h3>Page Layout</h3>
+                    <div class="page-layout-buttons">
+                        <button class="single-page">
+                            Single-Page
+                        </button>
+                        <button class="two-page">
+                            Two-Page-Even
+                        </button>
+                        <button class="two-page-odd">
+                            Two-Page-Odd
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -48,7 +75,8 @@
         var images = document.getElementsByClassName("image");
         var currentImage = 0;
         var length = images.length;
-        
+        var orientation = "left-to-right";
+
         function showSettings() {
             var settings = document.getElementById("settings");
             if (settings.className == "settings"){
@@ -57,6 +85,23 @@
                 settings.className = "settings";
             }
         }
+
+        function RightToLeft() {
+            if (orientation == "left-to-right"){
+                images = Array.from(images).reverse();
+                currentImage = length - currentImage - 1;
+                orientation = "right-to-left";
+            }
+        }
+
+        function LeftToRight() {
+            if (orientation == "right-to-left"){
+                images = Array.from(images).reverse();
+                currentImage = length - currentImage - 1;
+                orientation = "left-to-right";
+            }
+        }
+
         document.body.addEventListener('keydown', function(event) {
             const key = event.key;
             switch (key) {
