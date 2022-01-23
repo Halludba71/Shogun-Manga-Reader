@@ -79,12 +79,9 @@ header:hover{
     /* visibility: visible; */
 }
 
-/* .image-container{
-    display: flex;
-    margin: auto;
-    height: 880px;
-    padding: 10px;
-} */
+.image-container{
+    z-index: -1;
+}
 
 .image.hide{
     display: none;
@@ -99,7 +96,7 @@ header:hover{
 
 .image img{
     height:100%;
-    z-index: -1;
+    vertical-align: middle;
 }
 
 .setting-button{
@@ -123,26 +120,34 @@ header:hover{
     /* float: right; */
     width: 243px;
     height: 275px;
-    margin-right: -300px;
+    /* margin-right: -300px; */
     background-color: #222228;
     color: floralwhite;
     /* margin-top: 80px; */
     /* margin-right: -275px; */
     /* margin-left: auto; */
     border-radius: 10px;
-    transition: margin-right 750ms;
+    transition: 750ms;
     padding-left: 2px;
     border: 14px solid #222228;
+    /* visibility: hidden; */
+    /* position: fixed; */
+    transform: translateX(100%);
 }
 
 .settingsContainer{
     margin-top: 80px;
     float: right;
     overflow: hidden;
+    position: fixed;
+    /* background-color: yellowgreen; */
+    transform: translateX(560%);
 }
 
-.settings.show{
-    margin-right: 30px;
+.settings.show {
+    /* margin-right: 30px; */
+    transform: translateX(0%);
+    /* visibility: visible; */
 }
 
 .settings h3{
@@ -153,6 +158,12 @@ header:hover{
 .settings hr{
     color: #262729;
     /* border-top: 3px solid #262729; */
+}
+
+.settings img{
+    height: 20px;
+    width: 20px;
+    float: right;
 }
 
 .reading-style button{
@@ -214,4 +225,19 @@ header:hover{
     color: black;
 }
 
+.close-button{
+    background-color: #363738;
+    border: 3px solid #363738;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+    float: right;
+}
+
+.close-button:hover{
+    transition: 0.2s ease-in;
+    border: 3px solid #262729;
+    background-color: #262729;
+}
 /* #2f89e3  use this value for the colour selected option turns to*/

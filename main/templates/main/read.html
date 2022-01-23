@@ -23,16 +23,19 @@
     <main>
         <div class="settingsContainer">
             <div class="settings" id="settings">
+                <button class="close-button" onclick="showSettings()">
+                    <img src="{% static 'images/close-button.svg' %}" alt="">
+                </button>
                 <div class="reading-style">
                     <h3>Reading Style</h3>
                     <div class="reading-style-buttons" id="reading-style">
-                        <button class="left-to-right" onclick="LeftToRight()">
+                        <button class="active left-to-right" id="left-to-right" onclick="LeftToRight()">
                             Left-to-right
                         </button>
-                        <button class="active Right-to-left" onclick="RightToLeft()">
+                        <button class="right-to-left" id="right-to-left" onclick="RightToLeft()">
                             Right-to-left
                         </button>
-                        <button class="vertical">
+                        <button class="vertical" id="vertical" onclick="vertical()">
                             Vertical
                         </button>
                     </div>
@@ -87,17 +90,33 @@
         }
 
         function RightToLeft() {
-            if (orientation == "left-to-right"){
+            if (orientation != "right-to-left"){
                 images = Array.from(images).reverse();
                 currentImage = length - currentImage - 1;
+                document.getElementById(orientation).className = orientation;
+                document.getElementById("right-to-left").className = "active right-to-left";
                 orientation = "right-to-left";
             }
         }
 
-        function LeftToRight() {
+        function vertical(){
             if (orientation == "right-to-left"){
                 images = Array.from(images).reverse();
+            }
+            document.getElementById(orientation).className = orientation;
+            document.getElementById("vertical").className = "active vertical";
+            orientation = "vertical";
+            Array.from(images).forEach(image => {
+                image.className = "image"
+            });
+        }
+
+        function LeftToRight() {
+            if (orientation != "left-to-right"){
+                images = Array.from(images).reverse();
                 currentImage = length - currentImage - 1;
+                document.getElementById(orientation).className = orientation;
+                document.getElementById("left-to-right").className = "active left-to-right";
                 orientation = "left-to-right";
             }
         }
@@ -123,6 +142,7 @@
                     break;
             }
         });
+
     </script>
 </body>
 </html>
