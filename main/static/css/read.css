@@ -208,5 +208,10 @@ header:hover{
     margin-top: 5px;
 }
 
+#reading-style .active{
+    border: 5px solid #2d89e3;
+    background-color: #2d89e3;
+    color: black;
+}
 
 /* #2f89e3  use this value for the colour selected option turns to*/
