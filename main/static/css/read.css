@@ -80,7 +80,11 @@ header:hover{
 }
 
 .image-container{
-    z-index: -1;
+}
+
+.image-container img{
+    height: 100%;
+    vertical-align: middle;
 }
 
 .image.hide{
@@ -89,13 +93,31 @@ header:hover{
 
 .image{
     display:flex;
-    justify-content: center;
-    height: 98%;
-    /* padding-top: 2%; */
 }
 
 .image img{
-    height:100%;
+    margin-bottom: 3px;
+}
+
+.image-container[data-orientation="vertical"] img{
+    width: 70%;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.image-container[data-orientation="horizontal"]{
+    /* width: auto; */
+    display: flex;
+    justify-content: center;
+    height: 98%;
+    max-width: 98%;
+}
+
+.image-container[data-orientation="horizontal"] img{
+    height: 100%;
+    max-width: 98%;
     vertical-align: middle;
 }
 
@@ -117,9 +139,10 @@ header:hover{
 }
 
 .settings{
-    /* float: right; */
     width: 243px;
     height: 275px;
+    margin-left: calc(100vw);
+
     /* margin-right: -300px; */
     background-color: #222228;
     color: floralwhite;
@@ -130,25 +153,30 @@ header:hover{
     transition: 750ms;
     padding-left: 2px;
     border: 14px solid #222228;
+    transition: margin-left 750ms;
     /* visibility: hidden; */
     /* position: fixed; */
-    transform: translateX(100%);
-}
+    /* transform: translateX(100%); */
 
-.settingsContainer{
-    margin-top: 80px;
-    float: right;
-    overflow: hidden;
-    position: fixed;
-    /* background-color: yellowgreen; */
-    transform: translateX(560%);
+
 }
 
 .settings.show {
-    /* margin-right: 30px; */
-    transform: translateX(0%);
+    margin-left: calc(100vw - 290px);
+    
+    /* transform: translateX(0%); */
     /* visibility: visible; */
 }
+.settingsContainer{
+    margin-top: 80px;
+    width: 100%;
+    float: right;
+    margin-left: -80px;
+    overflow: hidden;
+    position: fixed;
+    /* transform: translateX(560%); */
+}
+
 
 .settings h3{
     margin-block-start: 0px;

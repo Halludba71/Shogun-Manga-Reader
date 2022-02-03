@@ -67,7 +67,6 @@ def bypass(response, imageUrl):
         'Referer': "https://readmanganato.com/",
     }
     # r = requests.get(imageUrl, headers=headers)
-    
     imageData = (requests.get(imageUrl, headers=headers)).content
     # print(imageData)
     return HttpResponse(imageData, content_type="image/png")

@@ -42,7 +42,7 @@
                 </div>
                 <div class="page-layout">
                     <h3>Page Layout</h3>
-                    <div class="page-layout-buttons">
+                    <div class="page-layout-buttons" >
                         <button class="single-page">
                             Single-Page
                         </button>
@@ -58,7 +58,7 @@
         </div>
         
         <!-- NO need to make this a base template since this will not include the side bar -->
-        <div class="image-container">
+        <div class="image-container" id="image-container" data-orientation="horizontal">
             {% for image in images %}  
             {% if forloop.counter0 == 0%}
             <div class="image">
@@ -91,11 +91,25 @@
 
         function RightToLeft() {
             if (orientation != "right-to-left"){
-                images = Array.from(images).reverse();
-                currentImage = length - currentImage - 1;
-                document.getElementById(orientation).className = orientation;
-                document.getElementById("right-to-left").className = "active right-to-left";
-                orientation = "right-to-left";
+                if (orientation != "vertical"){
+                    images = Array.from(images).reverse();
+                    currentImage = length - currentImage - 1;
+                    document.getElementById(orientation).className = orientation;
+                    document.getElementById("right-to-left").className = "active right-to-left";
+                    orientation = "right-to-left";
+                } else {
+                    document.getElementById(orientation).className = orientation;
+                    document.getElementById("left-to-right").className = "active right-to-left";
+                    orientation = "right-to-left";
+                    Array.from(images).forEach(image => {
+                        image.className = "image hide"
+                    });
+                    images = Array.from(images).reverse();
+                    currentImage = length - currentImage - 1;
+                    images[currentImage].className = "image"
+                    var container = document.getElementById("image-container");
+                    container.setAttribute("data-orientation", "horizontal");
+                }
             }
         }
 
@@ -109,15 +123,29 @@
             Array.from(images).forEach(image => {
                 image.className = "image"
             });
+            var container = document.getElementById("image-container");
+            container.setAttribute("data-orientation", "vertical");
         }
 
         function LeftToRight() {
             if (orientation != "left-to-right"){
-                images = Array.from(images).reverse();
-                currentImage = length - currentImage - 1;
-                document.getElementById(orientation).className = orientation;
-                document.getElementById("left-to-right").className = "active left-to-right";
-                orientation = "left-to-right";
+                if (orientation != "vertical"){
+                    images = Array.from(images).reverse();
+                    currentImage = length - currentImage - 1;
+                    document.getElementById(orientation).className = orientation;
+                    document.getElementById("left-to-right").className = "active left-to-right";
+                    orientation = "left-to-right";
+                } else {
+                    document.getElementById(orientation).className = orientation;
+                    document.getElementById("left-to-right").className = "active left-to-right";
+                    orientation = "left-to-right";
+                    Array.from(images).forEach(image => {
+                        image.className = "image hide"
+                    });
+                    images[currentImage].className = "image"
+                    var container = document.getElementById("image-container");
+                    container.setAttribute("data-orientation", "horizontal");
+                }
             }
         }
 
@@ -125,19 +153,23 @@
             const key = event.key;
             switch (key) {
                 case "ArrowLeft":
-                    console.log('Left');
-                    if (currentImage != 0){
-                        images[currentImage].className = "image hide";
-                        currentImage -= 1;
-                        images[currentImage].className = "image";
+                    if (orientation != "vertical"){
+                        console.log('Left');
+                        if (currentImage != 0){
+                            images[currentImage].className = "image hide";
+                            currentImage -= 1;
+                            images[currentImage].className = "image";
+                        }
                     }
                     break;
                 case "ArrowRight":
-                    console.log('Right');
-                    if (currentImage != length-1){
-                        images[currentImage].className = "image hide";
-                        currentImage += 1;
-                        images[currentImage].className = "image";
+                    if (orientation != "vertical"){
+                        console.log('Right');
+                        if (currentImage != length-1){
+                            images[currentImage].className = "image hide";
+                            currentImage += 1;
+                            images[currentImage].className = "image";
+                        }
                     }
                     break;
             }
