@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+import json
 from .models import manga, extension
 from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.download_extensions import download_extension
@@ -48,6 +49,9 @@ def comic(response, id, inLibrary):
     return render(response, "main/comic.html", {"comic":comic})
 
 def read(response, inLibrary, comicId, chapterId):
+    if response.method == "POST":
+        data = json.loads(response.body)
+        print(data['lastRead'])
     if inLibrary == 1:
         comic = manga.objects.get(id=comicId)
         chapters = comic.chapters_to_arr()
@@ -62,7 +66,6 @@ def read(response, inLibrary, comicId, chapterId):
     # return render(response, "main/read.html", {"comic": comic, "chapter": chapter})
 
 def bypass(response, imageUrl):
-    print(type(imageUrl))
     headers = {
         'Referer': "https://readmanganato.com/",
     }

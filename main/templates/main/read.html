@@ -7,7 +7,6 @@
     {% endblock %}
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/samurai.svg' %}" />
     <title>{{chapter.name}}</title>
-
 </head>
 <body>
     <div class="hoverToDisplay"></div>
@@ -86,30 +85,31 @@
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry =>{
                 if((orientation == "continuous-vertical") || (orientation == "vertical")){
-                    // if(entry.isIntersecting){
-                    console.log(entries.targe)
+                    if(entry.isIntersecting){
+                        currentImage = images.indexOf(entry.target);
+                        updateLastRead();
+                        observer.unobserve(entry.target);
+                    }
+                    
                 }
             })
+        },
+        {
+            rootMargin: "-200px",
         });
 
         images.forEach(image =>{
             observer.observe(image);
         })
 
-        // window.onscroll = function() {
-        //     Array.from(images).forEach(image => {
-        //         console.log(inViewport(image))
-        //     });
-        // }
-
-        function inViewport(image) {
-            const rect = image.getBoundingClientRect();
-            return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-            );
+        function updateLastRead(){
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", document.URL, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+            xhr.send(JSON.stringify({
+                "lastRead": currentImage
+            }));
         }
 
         function showSettings() {
@@ -168,6 +168,7 @@
                     var container = document.getElementById("image-container");
                     container.setAttribute("data-orientation", "vertical");
                 }
+                images[currentImage].scrollIntoView();
             }
         }
 
