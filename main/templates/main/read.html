@@ -38,6 +38,9 @@
                         <button class="vertical" id="vertical" onclick="vertical()">
                             Vertical
                         </button>
+                        <button class="continuous-vertical" id="continuous-vertical" onclick="continuousVertical()">
+                            Continuous Vertical
+                        </button>
                     </div>
                 </div>
                 <div class="page-layout">
@@ -75,10 +78,39 @@
         
     </main>
     <script>
-        var images = document.getElementsByClassName("image");
+        var images = Array.from(document.getElementsByClassName("image"));
         var currentImage = 0;
         var length = images.length;
         var orientation = "left-to-right";
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry =>{
+                if((orientation == "continuous-vertical") || (orientation == "vertical")){
+                    // if(entry.isIntersecting){
+                    console.log(entries.targe)
+                }
+            })
+        });
+
+        images.forEach(image =>{
+            observer.observe(image);
+        })
+
+        // window.onscroll = function() {
+        //     Array.from(images).forEach(image => {
+        //         console.log(inViewport(image))
+        //     });
+        // }
+
+        function inViewport(image) {
+            const rect = image.getBoundingClientRect();
+            return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+        }
 
         function showSettings() {
             var settings = document.getElementById("settings");
@@ -91,20 +123,20 @@
 
         function RightToLeft() {
             if (orientation != "right-to-left"){
-                if (orientation != "vertical"){
-                    images = Array.from(images).reverse();
+                if (orientation == "left-to-right"){
+                    images = images.reverse();
                     currentImage = length - currentImage - 1;
                     document.getElementById(orientation).className = orientation;
                     document.getElementById("right-to-left").className = "active right-to-left";
                     orientation = "right-to-left";
                 } else {
                     document.getElementById(orientation).className = orientation;
-                    document.getElementById("left-to-right").className = "active right-to-left";
+                    document.getElementById("right-to-left").className = "active right-to-left";
                     orientation = "right-to-left";
-                    Array.from(images).forEach(image => {
+                    images.forEach(image => {
                         image.className = "image hide"
                     });
-                    images = Array.from(images).reverse();
+                    images = images.reverse();
                     currentImage = length - currentImage - 1;
                     images[currentImage].className = "image"
                     var container = document.getElementById("image-container");
@@ -114,23 +146,61 @@
         }
 
         function vertical(){
-            if (orientation == "right-to-left"){
-                images = Array.from(images).reverse();
+            if (orientation != "vertical"){
+                if (orientation == "continuous-vertical"){
+                    document.getElementById(orientation).className = orientation;
+                    document.getElementById("vertical").className = "active vertical";
+                    orientation = "vertical";
+                    var container = document.getElementById("image-container");
+                    container.setAttribute("data-orientation", "vertical");
+                
+                } else {
+                    if (orientation == "right-to-left"){
+                        images = images.reverse();
+                        currentImage = length - currentImage - 1;
+                    } 
+                    document.getElementById(orientation).className = orientation;
+                    document.getElementById("vertical").className = "active vertical";
+                    orientation = "vertical";
+                    images.forEach(image => {
+                        image.className = "image"
+                    });
+                    var container = document.getElementById("image-container");
+                    container.setAttribute("data-orientation", "vertical");
+                }
             }
-            document.getElementById(orientation).className = orientation;
-            document.getElementById("vertical").className = "active vertical";
-            orientation = "vertical";
-            Array.from(images).forEach(image => {
-                image.className = "image"
-            });
-            var container = document.getElementById("image-container");
-            container.setAttribute("data-orientation", "vertical");
+        }
+
+        function continuousVertical(){
+            if (orientation != "continuous-vertical"){
+                if (orientation == "vertical"){
+                    document.getElementById(orientation).className = orientation;
+                    document.getElementById("continuous-vertical").className = "active continuous-vertical";
+                    orientation = "continuous-vertical";
+                    var container = document.getElementById("image-container");
+                    container.setAttribute("data-orientation", "continuous-vertical");
+                } else {
+                    if (orientation == "right-to-left"){
+                        images = images.reverse();
+                        currentImage = length - currentImage - 1;
+
+                    }
+                    document.getElementById(orientation).className = orientation;
+                    document.getElementById("continuous-vertical").className = "active continuous-vertical";
+                    orientation = "continuous-vertical";
+                    images.forEach(image => {
+                        image.className = "image"
+                    });
+                    var container = document.getElementById("image-container");
+                    container.setAttribute("data-orientation", "continuous-vertical");
+                }
+            }
         }
 
         function LeftToRight() {
             if (orientation != "left-to-right"){
                 if (orientation != "vertical"){
-                    images = Array.from(images).reverse();
+                    images = images.reverse();
                     currentImage = length - currentImage - 1;
                     document.getElementById(orientation).className = orientation;
                     document.getElementById("left-to-right").className = "active left-to-right";
@@ -139,7 +209,7 @@
                     document.getElementById(orientation).className = orientation;
                     document.getElementById("left-to-right").className = "active left-to-right";
                     orientation = "left-to-right";
-                    Array.from(images).forEach(image => {
+                    images.forEach(image => {
                         image.className = "image hide"
                     });
                     images[currentImage].className = "image"
