@@ -48,6 +48,15 @@ class sources(models.Model):
 	def __str__(self):
 		return self.name
 
+class chapter(models.Model):
+	name = models.TextField(default="")
+	url = models.TextField(default="")
+	read = models.BooleanField(default=False)
+	lastRead = models.IntegerField(default=0)
+
+	def __str__(self):
+		return self.name
+	
 class categories(models.Model):
 	name = models.TextField(default='', blank=True)
 
