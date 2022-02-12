@@ -21,10 +21,10 @@ class manga(models.Model):
 	]
 	type = models.CharField(max_length=6,choices=options, default='Manga')
 	description = models.TextField(default=None, blank=True)
-	chapters = models.TextField(default='',blank=True)
 	categories = models.TextField(default="All,")
 	source = models.TextField(default="", blank=True)
 	author = models.TextField(default="", blank=True)
+	orientation = models.TextField(default="left-to-right")
 	
 	def chapters_to_arr(self):
 		return json.loads(self.chapters)
@@ -53,6 +53,8 @@ class chapter(models.Model):
 	url = models.TextField(default="")
 	read = models.BooleanField(default=False)
 	lastRead = models.IntegerField(default=0)
+	comicId = models.IntegerField()
+	index = models.IntegerField()
 
 	def __str__(self):
 		return self.name

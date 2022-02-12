@@ -22,15 +22,15 @@
 <div class="manga-chapters">
     <h2>Chapters</h2>
     <table>
-        {% for chapter in comic.chapters_to_arr %}
+        {% for chapter in chapters %}
             <tr>
                 <td>
                     <input type="checkbox">
                 </td>
                 <td>
-                    <a href="/read/1/9/{{ chapter.index}}">
+                    <a href="/read/1/9/{{ chapter.id }}">
                         <div class="chapterLink">
-                            <p>{{ chapter.name }}</p>
+                            <p>{{ chapter }}</p>
                         </div>
                     </a>
                 </td>

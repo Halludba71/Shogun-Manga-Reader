@@ -8,7 +8,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/samurai.svg' %}" />
     <title>{{chapter.name}}</title>
 </head>
-<body>
+<body onload="trackImages()">
     <div class="hoverToDisplay"></div>
     <header>
         <a href="javascript:history.back()" class="back">
@@ -62,7 +62,7 @@
         <!-- NO need to make this a base template since this will not include the side bar -->
         <div class="image-container" id="image-container" data-orientation="horizontal">
             {% for image in images %}  
-            {% if forloop.counter0 == 0%}
+            {% if forloop.counter0 == chapter.lastRead %}
             <div class="image">
                 <img src="{{image}}">
             </div>
@@ -78,15 +78,41 @@
     </main>
     <script>
         var images = Array.from(document.getElementsByClassName("image"));
-        var currentImage = 0;
+        var currentImage = {{chapter.lastRead}};
         var length = images.length;
         var orientation = "left-to-right";
+        
+        if( "{{ comic.orientation }}" == "right-to-left"){
+            RightToLeft();
+        }
+        if( "{{ comic.orientation }}" == "vertical" ){
+            document.getElementById(orientation).className = orientation;
+            document.getElementById("vertical").className = "active vertical";
+            orientation = "vertical";
+            images.forEach(image => {
+                image.className = "image"
+            });
+            var container = document.getElementById("image-container");
+            container.setAttribute("data-orientation", "vertical");
+        }
+        if( "{{ comic.orientation }}" == "continuous-vertical" ){
+            document.getElementById(orientation).className = orientation;
+            document.getElementById("continuous-vertical").className = "active continuous-vertical";
+            orientation = "continuous-vertical";
+            images.forEach(image => {
+                image.className = "image"
+            });
+            var container = document.getElementById("image-container");
+            container.setAttribute("data-orientation", "continuous-vertical");
+
+        }
 
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry =>{
                 if((orientation == "continuous-vertical") || (orientation == "vertical")){
-                    if(entry.isIntersecting){
+                    if( (entry.isIntersecting) && (images.indexOf(entry.target) > currentImage) ){
                         currentImage = images.indexOf(entry.target);
+                        console.log(currentImage)
                         updateLastRead();
                         observer.unobserve(entry.target);
                     }
@@ -98,17 +124,40 @@
             rootMargin: "-200px",
         });
 
-        images.forEach(image =>{
-            observer.observe(image);
-        })
+        function trackImages(){
+            console.log(currentImage);
+            if( (orientation == "vertical") || (orientation == "continuous-vertical") ){
+                images[currentImage].scrollIntoView(false);
+            }
+            images.forEach(image =>{
+                    observer.observe(image);
+                });
+            }
+        
 
         function updateLastRead(){
+            lastRead = currentImage
+            if(orientation == "right-to-left"){
+                lastRead = length - currentImage - 1
+            }
             var xhr = new XMLHttpRequest();
             xhr.open("POST", document.URL, true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
             xhr.send(JSON.stringify({
-                "lastRead": currentImage
+                "value": "lastRead",
+                "lastRead": lastRead
+            }));
+        }
+
+        function updateOrientation(){
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", document.URL, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+            xhr.send(JSON.stringify({
+                "value": "orientation",
+                "orientation": orientation
             }));
         }
 
@@ -143,6 +192,9 @@
                     container.setAttribute("data-orientation", "horizontal");
                 }
             }
+            if(orientation != "{{ comic.orientation }}"){
+                updateOrientation()
+            }
         }
 
         function vertical(){
@@ -168,8 +220,12 @@
                     var container = document.getElementById("image-container");
                     container.setAttribute("data-orientation", "vertical");
                 }
-                images[currentImage].scrollIntoView();
+                images[currentImage].scrollIntoView(false);
+                if(orientation != "{{ comic.orientation }}"){
+                    updateOrientation()
+                }
             }
+            
         }
 
         function continuousVertical(){
@@ -195,7 +251,12 @@
                     var container = document.getElementById("image-container");
                     container.setAttribute("data-orientation", "continuous-vertical");
                 }
+                images[currentImage].scrollIntoView(false);
+                if(orientation != "{{ comic.orientation }}"){
+                    updateOrientation()
+                } 
             }
+            
         }
 
         function LeftToRight() {
@@ -218,6 +279,9 @@
                     container.setAttribute("data-orientation", "horizontal");
                 }
             }
+            if(orientation != "{{ comic.orientation }}"){
+                updateOrientation()
+            }
         }
 
         document.body.addEventListener('keydown', function(event) {
@@ -230,6 +294,7 @@
                             images[currentImage].className = "image hide";
                             currentImage -= 1;
                             images[currentImage].className = "image";
+                            updateLastRead();
                         }
                     }
                     break;
@@ -240,6 +305,8 @@
                             images[currentImage].className = "image hide";
                             currentImage += 1;
                             images[currentImage].className = "image";
+                            updateLastRead();
+
                         }
                     }
                     break;

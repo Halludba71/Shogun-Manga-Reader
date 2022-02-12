@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import json
-from .models import manga, extension
+from .models import manga, extension, chapter
 from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.download_extensions import download_extension
 from main.Backend.extensions.search_manga import search
@@ -44,25 +44,41 @@ def novel(response, id):
 def comic(response, id, inLibrary):
     if inLibrary == 1:
         comic = manga.objects.get(id=id)
+        chapters = chapter.objects.all().filter(comicId=id)
+
     elif inLibrary == 0:
         pass
-    return render(response, "main/comic.html", {"comic":comic})
+    return render(response, "main/comic.html", {"comic":comic, "chapters":chapters})
 
 def read(response, inLibrary, comicId, chapterId):
+    currentChapter = chapter.objects.get(id=chapterId)
+    comic = manga.objects.get(id=comicId)
     if response.method == "POST":
         data = json.loads(response.body)
-        print(data['lastRead'])
+        if data["value"] == "orientation":
+            comic.orientation = data['orientation']
+            comic.save()
+        if data["value"] == "lastRead":
+            currentChapter.lastRead = data['lastRead']
+            currentChapter.save()
+
     if inLibrary == 1:
-        comic = manga.objects.get(id=comicId)
-        chapters = comic.chapters_to_arr()
-        chapter = chapters[chapterId -1]
+        # comic = manga.objects.get(id=comicId)
+        # chapters = comic.chapters_to_arr()
+        # chapter = chapters[chapterId - 1]
+        # ext = extension.objects.get(id=comic.source)
+        # import sys
+        # sys.path.insert(0,ext.path)
+        # import source
+        # images = source.GetImageLinks(chapter["url"])
+
         ext = extension.objects.get(id=comic.source)
         import sys
-        sys.path.insert(0,ext.path)
+        sys.path.insert(0, ext.path)
         import source
-        images = source.GetImageLinks(chapter["url"])
+        images = source.GetImageLinks(currentChapter.url)
 
-    return render(response, "main/read.html", {"comic": comic, "chapter": chapter, "images": images})
+    return render(response, "main/read.html", {"comic": comic, "chapter": currentChapter, "images": images})
     # return render(response, "main/read.html", {"comic": comic, "chapter": chapter})
 
 def bypass(response, imageUrl):
