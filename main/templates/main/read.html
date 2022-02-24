@@ -272,7 +272,7 @@
 
         function LeftToRight() {
             if (orientation != "left-to-right"){
-                if (orientation != "vertical"){
+                if (orientation != "vertical" && orientation != "continuous-vertical"){
                     images = images.reverse();
                     currentImage = length - currentImage - 1;
                     document.getElementById(orientation).className = orientation;
