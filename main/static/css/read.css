@@ -87,6 +87,15 @@ header:hover{
     vertical-align: middle;
 }
 
+.image.left{
+    margin-left: auto;
+    margin-right: 0px;
+}
+
+.image.right{
+    margin-right:auto;
+    margin-left:0px;
+}
 .image.hide{
     display: none;
 }
@@ -115,6 +124,13 @@ header:hover{
 
 .image-container[data-orientation="horizontal"]{
     /* width: auto; */
+    display: flex;
+    justify-content: center;
+    height: 98%;
+    max-width: 98%;
+}
+
+.image-container[data-orientation="double-page"]{
     display: flex;
     justify-content: center;
     height: 98%;

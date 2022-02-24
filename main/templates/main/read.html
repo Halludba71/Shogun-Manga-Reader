@@ -51,7 +51,7 @@
                         <button class="two-page-even">
                             Two-Page-Even
                         </button>
-                        <button class="two-page-odd">
+                        <button class="two-page-odd" onclick="twoPageOdd()">
                             Two-Page-Odd
                         </button>
                     </div>
@@ -81,7 +81,8 @@
         var currentImage = {{chapter.lastRead}};
         var length = images.length;
         var orientation = "left-to-right";
-        
+        var layout = null;
+
         if( "{{ comic.orientation }}" == "right-to-left"){
             RightToLeft();
         }
@@ -259,6 +260,16 @@
             
         }
 
+        function twoPageOdd() {
+            if(orientation == "left-to-right"){
+                var container = document.getElementById("image-container");
+                container.setAttribute("data-orientation", "double-page");
+                layout = "double-page-odd"
+            }
+
+
+        }
+
         function LeftToRight() {
             if (orientation != "left-to-right"){
                 if (orientation != "vertical"){
@@ -291,10 +302,31 @@
                     if (orientation != "vertical"){
                         console.log('Left');
                         if (currentImage != 0){
-                            images[currentImage].className = "image hide";
-                            currentImage -= 1;
-                            images[currentImage].className = "image";
-                            updateLastRead();
+                            if(layout == "double-page-odd"){
+                                console.log("test")
+                                images[currentImage].className = "image hide";
+                                if(currentImage > 0){
+                                    images[currentImage - 1].className = "image hide"
+                                }
+                                currentImage -= 2;
+                                if(images[currentImage].firstElementChild.naturalWidth <= 1000){
+                                    if(currentImage == 0){
+                                        images[currentImage].className = "image";
+                                    } else{
+                                        images[currentImage].className = "image right";
+                                        images[currentImage -1].className = "image left";
+                                        // currentImage -= 1;
+                                    }
+                                } else{
+                                    images[currentImage].className = "image";
+                                }
+                            } else{
+                                images[currentImage].className = "image hide";
+                                currentImage -= 1;
+                                images[currentImage].className = "image";
+                                updateLastRead();
+                            }
+                            
                         }
                     }
                     break;
@@ -302,10 +334,30 @@
                     if (orientation != "vertical"){
                         console.log('Right');
                         if (currentImage != length-1){
-                            images[currentImage].className = "image hide";
-                            currentImage += 1;
-                            images[currentImage].className = "image";
-                            updateLastRead();
+                            if(layout == "double-page-odd"){
+                                images[currentImage].className = "image hide";
+                                if(currentImage > 0){
+                                    images[currentImage - 1].className = "image hide"
+                                }
+                                currentImage += 1;
+                                if(images[currentImage].firstElementChild.naturalWidth <= 1000){
+                                    if(currentImage == length -1){
+                                        images[currentImage].className = "image";
+                                    } else{
+                                    images[currentImage].className = "image left";
+                                    currentImage += 1;
+                                    images[currentImage].className = "image right"
+                                    }
+                                } else{
+                                    images[currentImage].className = "image";
+                                }
+                            } else{
+                                images[currentImage].className = "image hide";
+                                currentImage += 1;
+                                images[currentImage].className = "image";
+                                updateLastRead();
+                            }
+                            
 
                         }
                     }

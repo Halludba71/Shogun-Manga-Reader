@@ -21,7 +21,9 @@
 <br>
 <div class="manga-chapters">
     <h2>Chapters</h2>
-    <table>
+    <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
+
+    <table id="chapters">
         {% for chapter in chapters %}
             <tr>
                 <td>
@@ -42,6 +44,25 @@
     
 
 </div>
+<script>
+    function SearchChapters(){
+        var input = document.getElementById("search_box")
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById("chapters");
+        var tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
    
     
 {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}"> {% endcomment %}
