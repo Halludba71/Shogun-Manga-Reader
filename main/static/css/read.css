@@ -102,9 +102,15 @@ header:hover{
 
 .image{
     display:flex;
+    min-height: 6rem;
+    min-width: 6rem;
+    background-image: url("../images/loading.svg");
+    background-repeat:no-repeat;
+    background-position: 50% 50%;
 }
 
 .image img{
+    
 }
 
 .image-container[data-orientation="vertical"] img{
