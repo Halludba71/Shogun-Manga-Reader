@@ -21,18 +21,31 @@
 <br>
 <div class="manga-chapters">
     <h2>Chapters</h2>
-    <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
+    <div>
+        <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
+        <button class="markAsRead">
+            Mark as read
+        </button>
+    </div>
 
     <table id="chapters">
         {% for chapter in chapters %}
             <tr>
                 <td>
+                    {% if chapter.read == True %}
                     <input type="checkbox">
+                    {% else %}
+                        <input type="checkbox">
+                    {% endif %}
                 </td>
                 <td>
-                    <a href="/read/1/9/{{ chapter.id }}">
+                    <a href="/read/1/{{ comic.id }}/{{ chapter.id }}">
                         <div class="chapterLink">
-                            <p>{{ chapter }}</p>
+                            {% if chapter.read == True %}
+                                <p class="read" >{{ chapter }}</p>
+                            {% else %}
+                                <p>{{ chapter }}</p>
+                            {% endif %}
                         </div>
                     </a>
                 </td>

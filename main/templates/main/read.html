@@ -12,10 +12,28 @@
     <div class="hoverToDisplay"></div>
     <header>
         <img style="display: none;" src="{% static 'images/loading.svg' %}" alt="">
-        <a href="javascript:history.back()" class="back">
-            <img src="{% static 'images/back.png' %}" width="40" height="40" >
-        </a>
-        <h3>{{chapter.name}}</h3>
+        <button class="chapterList">
+            <a href="/comic/1/{{comic.id}}">
+                <img src="{% static 'images/menu.png' %}" width="23" height="23">
+            </a>
+        </button>
+        <h3 style="margin-right:auto;">{{chapter.name}}</h3>
+        {% if chapter.index > 1%}
+        <button class="previousChapter">
+            <a href="/read/1/{{ comic.id}}/{{ chapter.index|add:"-1"}}">
+                <img src="{% static 'images/back.png' %}" width="32" height="30" alt="">
+            </a>
+        </button>
+        {% endif %}
+
+        {% if chapter.index < comic.NumChapters%}
+        <button class="nextChapter">
+            <a href="/read/1/{{ comic.id }}/{{ chapter.index|add:"1"}}">
+                <img src="{% static 'images/next.png' %}" width="32" height="30" alt="">
+            </a>
+        </button>
+        {% endif %}
+
         <button class="setting-button" onclick="showSettings()">
             <img src="{% static 'images/setting.svg' %}" alt="">
         </button>
@@ -59,7 +77,8 @@
                 </div>
             </div>
         </div>
-        
+    
+
         <!-- NO need to make this a base template since this will not include the side bar -->
         <div class="image-container" id="image-container" data-orientation="horizontal">
             {% for image in images %}  
@@ -146,10 +165,17 @@
             xhr.open("POST", document.URL, true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-            xhr.send(JSON.stringify({
-                "value": "lastRead",
-                "lastRead": lastRead
-            }));
+            if(lastRead == length - 1){
+                xhr.send(JSON.stringify({
+                    "value": "Completed",
+                    "lastRead": lastRead
+                }));
+            } else{
+                xhr.send(JSON.stringify({
+                    "value": "lastRead",
+                    "lastRead": lastRead
+                }));
+            }
         }
 
         function updateOrientation(){

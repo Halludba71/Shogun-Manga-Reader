@@ -50,11 +50,15 @@ def comic(response, id, inLibrary):
         pass
     return render(response, "main/comic.html", {"comic":comic, "chapters":chapters})
 
-def read(response, inLibrary, comicId, chapterId):
-    currentChapter = chapter.objects.get(id=chapterId)
+def read(response, inLibrary, comicId, chapterIndex):
+    currentChapter = chapter.objects.get(index=chapterIndex)
     comic = manga.objects.get(id=comicId)
     if response.method == "POST":
         data = json.loads(response.body)
+        if data["value"] == "Completed":
+            currentChapter.lastRead = data['lastRead']
+            currentChapter.read = True
+            currentChapter.save()
         if data["value"] == "orientation":
             comic.orientation = data['orientation']
             comic.save()
