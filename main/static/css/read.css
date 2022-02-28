@@ -13,9 +13,6 @@
     src: url('OpenSans-Bold.ttf') format('truetype');
 }
 
-/* .back img{
-    filter: invert(60%) sepia(80%) saturate(913%) hue-rotate(166deg) brightness(99%) contrast(2%);
-} */
 
 body {
 
@@ -151,7 +148,7 @@ header:hover{
 
 .setting-button{
     background-color: #363738;
-    margin-left: auto;
+    /* margin-left: auto; */
     margin-right: 30px;
     border: 5px solid #363738;
     padding: 1px;
@@ -298,3 +295,51 @@ header:hover{
     background-color: #262729;
 }
 /* #2f89e3  use this value for the colour selected option turns to*/
+
+.chapterList{
+    background-color: #363738;
+    margin-right: 7px;
+    border: 5px solid #363738;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.chapterList:hover{
+    transition: 0.2s ease-in;
+    border: 5px solid #262729;
+    background-color: #262729;
+}
+
+.previousChapter{
+    background-color: #363738;
+    margin-right: 30px;
+    border: 1px solid #363738;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.previousChapter:hover{
+    transition: 0.2s ease-in;
+    border: 1px solid #262729;
+    background-color: #262729;
+}
+
+.nextChapter{
+    background-color: #363738;
+    border: 1px solid #363738;
+    margin-right: 30px;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.nextChapter:hover{
+    transition: 0.2s ease-in;
+    border: 1px solid #262729;
+    background-color: #262729;
+}
