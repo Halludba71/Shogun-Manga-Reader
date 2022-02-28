@@ -61,3 +61,29 @@
 .read{
     color: #525252;
 }
+
+.chapterEditor button{
+    background-color: #363738;
+    border: 4px solid #363738;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.chapterEditor button:hover{
+    transition: 0.2s ease-in;
+    border: 4px solid #262729;
+    background-color: #262729;
+}
+
+.chapterEditor{
+    margin-left: auto;
+}
+
+.chapterEditor.hidden{
+    visibility: hidden;
+}
+.toolContainer{
+    display: flex;
+}

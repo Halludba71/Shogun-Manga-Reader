@@ -18,7 +18,7 @@
             </a>
         </button>
         <h3 style="margin-right:auto;">{{chapter.name}}</h3>
-        {% if chapter.index > 1%}
+        {% if chapter.index > 1 %}
         <button class="previousChapter">
             <a href="/read/1/{{ comic.id}}/{{ chapter.index|add:"-1"}}">
                 <img src="{% static 'images/back.png' %}" width="32" height="30" alt="">
@@ -26,7 +26,7 @@
         </button>
         {% endif %}
 
-        {% if chapter.index < comic.NumChapters%}
+        {% if chapter.index < comic.NumChapters %}
         <button class="nextChapter">
             <a href="/read/1/{{ comic.id }}/{{ chapter.index|add:"1"}}">
                 <img src="{% static 'images/next.png' %}" width="32" height="30" alt="">

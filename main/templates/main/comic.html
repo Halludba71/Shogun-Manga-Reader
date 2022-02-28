@@ -21,22 +21,26 @@
 <br>
 <div class="manga-chapters">
     <h2>Chapters</h2>
-    <div>
+    <div class="toolContainer">
         <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
-        <button class="markAsRead">
-            Mark as read
-        </button>
+        <div class="chapterEditor">
+            <button>
+                <img src="{% static 'images/download.svg' %}" alt="">
+            </button>
+            <button>
+                <img src="{% static 'images/read.svg' %}" alt="">
+            </button>
+            <button>
+                <img src="{% static 'images/unread.svg' %}" alt="">
+            </button>
+        </div>
     </div>
 
     <table id="chapters">
         {% for chapter in chapters %}
             <tr>
                 <td>
-                    {% if chapter.read == True %}
-                    <input type="checkbox">
-                    {% else %}
-                        <input type="checkbox">
-                    {% endif %}
+                    <input type="checkbox" onchange="markCheckbox()">
                 </td>
                 <td>
                     <a href="/read/1/{{ comic.id }}/{{ chapter.id }}">
@@ -58,6 +62,11 @@
 
 </div>
 <script>
+
+    function markCheckbox(){
+        console.log("HELLO THERE")
+    }
+
     function SearchChapters(){
         var input = document.getElementById("search_box")
         var filter = input.value.toUpperCase();
