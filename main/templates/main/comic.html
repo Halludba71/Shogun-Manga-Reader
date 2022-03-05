@@ -20,69 +20,184 @@
 </div>
 <br>
 <div class="manga-chapters">
-    <h2>Chapters</h2>
-    <div class="toolContainer">
-        <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
-        <div class="chapterEditor">
+    <div class="top-row">
+        <h2>Chapters</h2>
+        <div class="tooltip">
+            <span class="tooltipText">Filter chapters</span>
             <button>
-                <img src="{% static 'images/download.svg' %}" alt="">
-            </button>
-            <button>
-                <img src="{% static 'images/read.svg' %}" alt="">
-            </button>
-            <button>
-                <img src="{% static 'images/unread.svg' %}" alt="">
+                <img src="{% static 'images/filter.svg' %}" alt="">
             </button>
         </div>
     </div>
-
+        
+    <div class="toolContainer">
+        <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
+        <div class="chapterEditor hidden" id="chapterEditor">
+            <div class="tooltip">
+                <span class="tooltipText">Cancel</span>
+                <button onclick="CancelSelection()">
+                    <img src="{% static 'images/unselect_all.svg' %}" alt="">
+                </button>
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Select All</span>
+                <button onclick="selectAll()">
+                    <img src="{% static 'images/select_all.svg' %}" alt="">
+                </button>
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Select Unselected</span>
+                <button onclick="selectUnselected()">
+                    <img src="{% static 'images/select_unselected.svg' %}" alt="">
+                </button>
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Download Selected Chapters</span>
+                <button>
+                    <img src="{% static 'images/download.svg' %}" alt="">
+                </button>
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Mark selected chapters as read</span>
+                <button onclick="markRead()">
+                    <img src="{% static 'images/read.svg' %}" alt="">
+                </button>
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Mark selected chapters as unread</span>
+                <button onclick="markUnread()">
+                    <img src="{% static 'images/unread.svg' %}" alt="">
+                </button>
+            </div>
+        </div>
+    </div>
     <table id="chapters">
         {% for chapter in chapters %}
-            <tr>
-                <td>
-                    <input type="checkbox" onchange="markCheckbox()">
-                </td>
-                <td>
-                    <a href="/read/1/{{ comic.id }}/{{ chapter.id }}">
-                        <div class="chapterLink">
-                            {% if chapter.read == True %}
-                                <p class="read" >{{ chapter }}</p>
-                            {% else %}
-                                <p>{{ chapter }}</p>
-                            {% endif %}
-                        </div>
-                    </a>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                <input type="checkbox" value="{{chapter.id}}" name="checkbox" onchange="checkBoxChange()">
+            </td>
+            <td>
+                <a href="/read/1/{{ comic.id }}/{{ chapter.id }}">
+                    <div class="chapterLink">
+                        {% if chapter.read == True %}
+                        <p class="read" value="{{chapter.id}}">{{ chapter }}</p>
+                        {% else %}
+                        <p>{{ chapter }}</p>
+                        {% endif %}
+                    </div>
+                </a>
+            </td>
+        </tr>
         {% endfor %}
     </table>
+</form>
     
                 
     
 
 </div>
 <script>
-
-    function markCheckbox(){
-        console.log("HELLO THERE")
+    var editing = false;
+    chapterEditor = document.getElementById('chapterEditor');
+    checkboxes = Array.from(document.getElementsByName('checkbox'));
+    
+    function markUnread(){
+        checkboxes.forEach(checkbox =>{
+            if(checkbox.checked == true){
+                checkbox.parentElement.parentElement.lastElementChild.firstElementChild.firstElementChild.firstElementChild.className = "unread";
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", document.URL, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                xhr.send(JSON.stringify({
+                    "value": "unread",
+                    "chapterid": checkbox.value
+            }));
+            }
+        });
+        editing = false;
+        chapterEditor.className = "chapterEditor hidden";
+        unselectAll();
+    }
+    function CancelSelection(){
+        checkboxes.forEach(checkbox =>{
+            checkbox.checked = false;
+        });
+        editing = false;
+        chapterEditor.className = "chapterEditor hidden"
     }
 
-    function SearchChapters(){
-        var input = document.getElementById("search_box")
-        var filter = input.value.toUpperCase();
-        var table = document.getElementById("chapters");
-        var tr = table.getElementsByTagName("tr");
-        for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[1];
-            if (td) {
-                txtValue = td.textContent || td.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
+    function selectUnselected(){
+        checkboxes.forEach(checkbox =>{
+            if(checkbox.parentElement.parentElement.style.display != "none"){
+                if(checkbox.checked == true){
+                    checkbox.checked = false;
+                } else{
+                    checkbox.checked = true;
                 }
             }
+        })
+    }
+
+    function markRead(){
+        checkboxes.forEach(checkbox =>{
+            if(checkbox.checked == true){
+                checkbox.parentElement.parentElement.lastElementChild.firstElementChild.firstElementChild.firstElementChild.className = "read";
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", document.URL, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                xhr.send(JSON.stringify({
+                    "value": "read",
+                    "chapterid": checkbox.value
+            }));
+            }
+        });
+        editing = false;
+        chapterEditor.className = "chapterEditor hidden";
+        unselectAll();
+    }
+
+    function unselectAll(){
+        checkboxes.forEach(checkbox =>{
+            if(checkbox.parentElement.parentElement.style.display != "none"){
+                checkbox.checked = false;
+            }
+        });
+    }
+
+    function selectAll(){
+        checkboxes.forEach(checkbox =>{
+            if(checkbox.parentElement.parentElement.style.display != "none"){
+                checkbox.checked = true;
+            }
+        });
+    }
+    function checkBoxChange(){
+        if(editing == false){
+            editing = true;
+            chapterEditor.className = "chapterEditor";
         }
+    }
+    function SearchChapters(){
+        if(editing == false){
+            var input = document.getElementById("search_box")
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("chapters");
+            var tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+            }
     }
 </script>
    

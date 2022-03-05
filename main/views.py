@@ -6,6 +6,8 @@ from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.download_extensions import download_extension
 from main.Backend.extensions.search_manga import search
 import requests
+import sys
+import ast
 # from .reader import * # This line is currently not needed
 # Create your views here.
 
@@ -19,21 +21,26 @@ def library(response):
     return render(response, "main/library.html", {'library': library})
 
 def browse(response):
+    results = []
+    extensions = extension.objects.all()
     if response.method == "GET":
         SearchQuery = response.GET.get('search_box', None)
         if SearchQuery is not None:
-            search(SearchQuery)
-    return render(response, "main/browse.html", {})
+            results = search(SearchQuery)
+            print(results)
+    if response.method == "POST":
+        # print(response.POST['mangaInfo'])
+        response.session['mangaInfo'] = response.POST['mangaInfo']
+        return redirect('/comic/0/0')
+    return render(response, "main/browse.html", {"results": results, "extensions": extensions})
 
 
 def extensions(response):
     if response.method == "POST":
-        import ast
         extension_data = response.POST['extension']
         download_extension(ast.literal_eval(extension_data))
     all_extensions = ext_list()
-    print(type(all_extensions))
-    installed_extensions = extension.objects.all
+    installed_extensions = extension.objects.all()
     return render(response, "main/extensions.html", {'installed': installed_extensions, 'all': all_extensions})
 
 def novel(response, id):
@@ -42,12 +49,31 @@ def novel(response, id):
     return render(response, "main/novel.html", {"novel":novel})
 
 def comic(response, id, inLibrary):
+    if response.method == "POST":
+        data = json.loads(response.body)
+        if data["value"] == "read":
+            readChapter = chapter.objects.get(id=data["chapterid"])
+            readChapter.read = True
+            readChapter.lastRead = 0
+            readChapter.save()
+        if data["value"] == "unread":
+            unreadChapter = chapter.objects.get(id=data["chapterid"])
+            unreadChapter.read = False
+            unreadChapter.lastRead = 0
+            unreadChapter.save()
     if inLibrary == 1:
         comic = manga.objects.get(id=id)
         chapters = chapter.objects.all().filter(comicId=id)
 
     elif inLibrary == 0:
-        pass
+        data = response.session.get('mangaInfo').split(',')
+        ext = extension.objects.get(name=data[0])
+        sys.path.insert(0, ext.path)
+        import source
+        comic = source.GetMetadata(data[1])
+        chapters = source.GetChapters(data[1])
+        return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
+
     return render(response, "main/comic.html", {"comic":comic, "chapters":chapters})
 
 def read(response, inLibrary, comicId, chapterIndex):
@@ -67,17 +93,7 @@ def read(response, inLibrary, comicId, chapterIndex):
             currentChapter.save()
 
     if inLibrary == 1:
-        # comic = manga.objects.get(id=comicId)
-        # chapters = comic.chapters_to_arr()
-        # chapter = chapters[chapterId - 1]
-        # ext = extension.objects.get(id=comic.source)
-        # import sys
-        # sys.path.insert(0,ext.path)
-        # import source
-        # images = source.GetImageLinks(chapter["url"])
-
         ext = extension.objects.get(id=comic.source)
-        import sys
         sys.path.insert(0, ext.path)
         import source
         images = source.GetImageLinks(currentChapter.url)

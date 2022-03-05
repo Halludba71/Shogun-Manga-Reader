@@ -11,29 +11,31 @@
 {% block content %}
 <h2>Extensions</h2>
 <div class="extension_list">
-<h3>Installed:</h3>
-{% for installed_extension in installed_extensions %}
-    <p>{{ installed_extension }}</p>
-{% endfor %}
-</div>
-<br>
-<div class="extension_list">
-<h3>All:</h3>
-{% for extension in all %}
-    <div class="row">
-        <div class="extension">
-            <img src="{{ extension.logo }}" alt="logo" width="35" height="35">  
-            <p>{{ extension.Name }}</p> 
+    <h3>Installed:</h3>
+    {% for extension in installed %}
+        <div class="row">
+            <div class="extension">
+                <img src="{{ extension.logo }}" width="35" height="35" alt="">
+                <p>{{ extension }}</p>
+            </div>
         </div>
-        
-        <form action="/extensions/" method="post" class="install-button">
-        {% csrf_token %}
-        <button name="extension" value="{{ extension }}" class="install-button">
-        <span>Install</span>
-        </button>
-        </form>
-        
-    </div>
-{% endfor %}
+    {% endfor %}
+    <br>
+    <h3>All:</h3>
+    {% for extension in all %}
+        <div class="row">
+            <div class="extension">
+                <img src="{{ extension.logo }}" alt="logo" width="35" height="35">  
+                <p>{{ extension.Name }}</p> 
+            </div>
+            
+            <form action="/extensions/" method="post" class="install-button">
+            {% csrf_token %}
+            <button name="extension" value="{{ extension }}" class="install-button">
+            <span>Install</span>
+            </button>
+            </form> 
+        </div>
+    {% endfor %}
 </div>
 {% endblock  %}

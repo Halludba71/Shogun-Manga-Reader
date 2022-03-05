@@ -9,7 +9,7 @@ def SearchManga(query):
     """
     Searches Manganato for a specifc manga
     """
-    # query = query.replace(" ", "_")
+    query = query.replace(" ", "_")
     results = requests.get(f"https://readmanganato.com/search/story/{query}")
     soup = BeautifulSoup(results.text, "html.parser")
     items = soup.find_all(class_="search-story-item")
@@ -29,18 +29,32 @@ def GetChapters(manga_url):
     request = requests.get(manga_url)
     soup = BeautifulSoup(request.text, "html.parser")
     results = soup.find(class_="row-content-chapter").find_all("li")
-    Chapters = {}
+    Chapters = []
     for result in results:
         lines = str(result).splitlines()
         ChapterName = re.findall(r'>(.*?)</a>', lines[1])[0]
         Date = re.findall(r'>(.*?)</span>', lines[3])[0]
-        Chapters[ChapterName] = Date
+        Chapters.append({"name":ChapterName, "date":Date})
     return(Chapters)
 
 def GetMetadata(manga_url):
     """
     Gets all metadata for a certain manga
     """
+
+    request = requests.get(manga_url)
+    soup = BeautifulSoup(request.text, "html.parser")
+    name = re.findall(r'<h1>(.*?)</h1>', str(soup.find("h1")))[0]
+    cover = re.findall(r'src="(.*?)"',str(soup.find(class_="info-image")))[0]
+    author = re.findall(r'>(.*?)</a>', str(soup.findAll(class_="table-value")[1]))[0]
+    description = soup.findAll(class_="panel-story-info-description")[0].text
+    mangaInfo = {}
+    mangaInfo["name"] = name
+    mangaInfo["cover"] = cover
+    mangaInfo["author"] = author
+    mangaInfo["description"] = description
+
+    return mangaInfo
 
 def GetImageLinks(page_url):
     """
@@ -81,11 +95,4 @@ def imageToBase64(url):
     src = (f"data:{r.headers['Content-Type']};base64, {(base64.b64encode(r.content)).decode('UTF-8')}")
     return src
 
-# print(GetChapters("https://readmanganato.com/manga-dr980474"))
-
-# print(GetChapters("https://readmanganato.com/manga-dr980474"))
-# x = None
-# print(SearchManga(x))
-
-
-# print(imageToBase64("https://s2.mkklcdnv6tempv2.com/mangakakalot/r1/read_naruto_manga_online_free3/chapter_7005_uzumaki_naruto/1.jpg"))
+# print(GetChapters("https://readmanganato.com/manga-aa951409"))

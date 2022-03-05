@@ -14,5 +14,22 @@
 <form action="." method="get">
     <input type="text" id="search_box" name="search_box" placeholder="Search Manga..." required=True class="search_box">
 
-    </form>
+</form>
+{% for k,v in results.items %}
+        <h3>{{k}}</h3>
+        <div class="books">
+            {% for k2, v2 in v.items %}
+                <div class="book">
+                    <form action="/browse/" method="post">
+                        {% csrf_token %}
+                        <button name="mangaInfo" value="{{k}},{{v2.0}}">
+                            <img class="book-cover" src="{{v2.1}}" width="130" height="180" />
+                        </button>
+                        <div class="book-name">{{ k2 }}</div>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+{% endfor %}
+
 {% endblock  %}

@@ -35,7 +35,8 @@ class manga(models.Model):
 class extension(models.Model):
 	name = models.TextField(default="")
 	path = models.TextField(default="")
-	
+	logo = models.TextField(default="")
+
 	def __str__(self):
 		return self.name
 		
