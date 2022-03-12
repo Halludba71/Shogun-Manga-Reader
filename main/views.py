@@ -78,7 +78,7 @@ def comic(response, id, inLibrary):
         
         chapters = source.GetChapters(mangaInfo[1])
         response.session['Chapters'] = chapters
-    return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
+        return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
 
     return render(response, "main/comic.html", {"comic":comic, "chapters":chapters})
 
