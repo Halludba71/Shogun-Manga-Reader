@@ -4,6 +4,7 @@
 {% block extra_head_content %}
 
     <link rel="stylesheet" type="text/css" href="{% static 'css/comic.css' %}">
+    <link rel="stylesheet" href="{% static 'css/browse_comic.css' %}">
     {{ block.super }}
 {% endblock %}
 
@@ -13,6 +14,12 @@
     <img class="manga-cover" src="{{comic.cover}}" alt="" width="176" height="264.26">
     <h1  class="manga-name">{{comic.name}}</h1>
     <h3>By {{comic.author}}</h3>
+    <form action="/comic/0/0" method="post">
+        {% csrf_token %}
+        <button class="addToLibrary">
+            Add To library
+        </button>
+    </form>
     <h4 class="manga-description">
         {{comic.description}}
     </h4>
@@ -25,7 +32,7 @@
         <h2>Chapters</h2>
         <div class="tooltip">
             <span class="tooltipText">Filter chapters</span>
-            <button>
+            <button class="tool">
                 <img src="{% static 'images/filter.svg' %}" alt="">
             </button>
         </div>
@@ -34,17 +41,16 @@
     <div class="toolContainer">
         <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
     </div>
-    <table id="chapters">
+    <div>
+        Chapters cannot be read if they are not in library!
+    </div>
+    <ul id="chapters">
         {% for chapter in chapters %}
-        <tr>
-            <td>
-                {% comment %} <div class="chapterLink"> {% endcomment %}
-                    <p>{{ chapter.name }}</p>
-                {% comment %} </div> {% endcomment %}
-            </td>
-        </tr>
+        <li>
+            <p>{{ chapter.name }}</p>
+        </li>
         {% endfor %}
-    </table>
+    </ul>
 </form>
 </div>
 <script>
@@ -52,16 +58,16 @@
         console.log("hello")
         var input = document.getElementById("search_box")
         var filter = input.value.toUpperCase();
-        var table = document.getElementById("chapters");
-        var tr = table.getElementsByTagName("tr");
-        for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[0];
-            if (td) {
-                txtValue = td.textContent || td.innerText;
+        var list = document.getElementById("chapters");
+        var li = list.getElementsByTagName("li");
+        for (i = 0; i < li.length; i++) {
+            row = li[i].getElementsByTagName("p")[0];
+            if (row) {
+                txtValue = row.textContent || td.innerText;
                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
+                    li[i].style.display = "";
                 } else {
-                    tr[i].style.display = "none";
+                    li[i].style.display = "none";
                 }
             }
         }

@@ -11,7 +11,7 @@
 @font-face {
     font-family: 'Open Sans';
     font-display: swap;
-    src: url('OpenSans-Bold.ttf') format('truetype');
+    src: url('OpenSans-Regular.ttf') format('truetype');
 }
 
 body {

@@ -49,30 +49,36 @@ def novel(response, id):
     return render(response, "main/novel.html", {"novel":novel})
 
 def comic(response, id, inLibrary):
-    if response.method == "POST":
-        data = json.loads(response.body)
-        if data["value"] == "read":
-            readChapter = chapter.objects.get(id=data["chapterid"])
-            readChapter.read = True
-            readChapter.lastRead = 0
-            readChapter.save()
-        if data["value"] == "unread":
-            unreadChapter = chapter.objects.get(id=data["chapterid"])
-            unreadChapter.read = False
-            unreadChapter.lastRead = 0
-            unreadChapter.save()
     if inLibrary == 1:
+        if response.method == "POST":
+            data = json.loads(response.body)
+            if data["value"] == "read":
+                readChapter = chapter.objects.get(id=data["chapterid"])
+                readChapter.read = True
+                readChapter.lastRead = 0
+                readChapter.save()
+            if data["value"] == "unread":
+                unreadChapter = chapter.objects.get(id=data["chapterid"])
+                unreadChapter.read = False
+                unreadChapter.lastRead = 0
+                unreadChapter.save()
+
         comic = manga.objects.get(id=id)
         chapters = chapter.objects.all().filter(comicId=id)
 
     elif inLibrary == 0:
-        data = response.session.get('mangaInfo').split(',')
-        ext = extension.objects.get(name=data[0])
+        mangaInfo = response.session.get('mangaInfo').split(',')
+        ext = extension.objects.get(name=mangaInfo[0])
         sys.path.insert(0, ext.path)
         import source
-        comic = source.GetMetadata(data[1])
-        chapters = source.GetChapters(data[1])
-        return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
+        comic = source.GetMetadata(mangaInfo[1])
+        if response.method == "POST":
+            # newItem = manga.objects.create(name="")
+            print(comic)
+        
+        chapters = source.GetChapters(mangaInfo[1])
+        response.session['Chapters'] = chapters
+    return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
 
     return render(response, "main/comic.html", {"comic":comic, "chapters":chapters})
 

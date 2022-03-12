@@ -33,6 +33,7 @@ def GetChapters(manga_url):
     for result in results:
         lines = str(result).splitlines()
         ChapterName = re.findall(r'>(.*?)</a>', lines[1])[0]
+        # ChapterLink = re.findall(r'href="(.*?)"', lines[1])[0]
         Date = re.findall(r'>(.*?)</span>', lines[3])[0]
         Chapters.append({"name":ChapterName, "date":Date})
     return(Chapters)

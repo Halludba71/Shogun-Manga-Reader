@@ -24,9 +24,9 @@
         <h2>Chapters</h2>
         <div class="tooltip">
             <span class="tooltipText">Filter chapters</span>
-            <button>
+            <button class="tool">
                 <img src="{% static 'images/filter.svg' %}" alt="">
-            </button>
+            </button class="tool">
         </div>
     </div>
         
@@ -35,39 +35,39 @@
         <div class="chapterEditor hidden" id="chapterEditor">
             <div class="tooltip">
                 <span class="tooltipText">Cancel</span>
-                <button onclick="CancelSelection()">
+                <button class="tool" onclick="CancelSelection()">
                     <img src="{% static 'images/unselect_all.svg' %}" alt="">
-                </button>
+                </button class="tool">
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Select All</span>
-                <button onclick="selectAll()">
+                <button class="tool" onclick="selectAll()">
                     <img src="{% static 'images/select_all.svg' %}" alt="">
-                </button>
+                </button class="tool">
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Select Unselected</span>
-                <button onclick="selectUnselected()">
+                <button class="tool" onclick="selectUnselected()">
                     <img src="{% static 'images/select_unselected.svg' %}" alt="">
-                </button>
+                </button class="tool">
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Download Selected Chapters</span>
-                <button>
+                <button class="tool">
                     <img src="{% static 'images/download.svg' %}" alt="">
-                </button>
+                </button class="tool">
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Mark selected chapters as read</span>
-                <button onclick="markRead()">
+                <button class="tool" onclick="markRead()">
                     <img src="{% static 'images/read.svg' %}" alt="">
-                </button>
+                </button class="tool">
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Mark selected chapters as unread</span>
-                <button onclick="markUnread()">
+                <button class="tool" onclick="markUnread()">
                     <img src="{% static 'images/unread.svg' %}" alt="">
-                </button>
+                </button class="tool">
             </div>
         </div>
     </div>
