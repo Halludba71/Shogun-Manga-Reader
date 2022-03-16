@@ -3,6 +3,7 @@ import re
 from bs4 import BeautifulSoup
 import os
 import base64
+
 proxy = "/bypass/"
 
 def SearchManga(query):
@@ -33,9 +34,10 @@ def GetChapters(manga_url):
     for result in results:
         lines = str(result).splitlines()
         ChapterName = re.findall(r'>(.*?)</a>', lines[1])[0]
-        # ChapterLink = re.findall(r'href="(.*?)"', lines[1])[0]
-        Date = re.findall(r'>(.*?)</span>', lines[3])[0]
-        Chapters.append({"name":ChapterName, "date":Date})
+        ChapterLink = re.findall(r'href="(.*?)"', lines[1])[0]
+        # Date = re.findall(r'>(.*?)</span>', lines[3])[0]
+        # print(ChapterLink)
+        Chapters.append({"name":ChapterName, "url": ChapterLink})
     return(Chapters)
 
 def GetMetadata(manga_url):
@@ -51,6 +53,7 @@ def GetMetadata(manga_url):
     description = soup.findAll(class_="panel-story-info-description")[0].text
     mangaInfo = {}
     mangaInfo["name"] = name
+    mangaInfo["url"] = manga_url
     mangaInfo["cover"] = cover
     mangaInfo["author"] = author
     mangaInfo["description"] = description

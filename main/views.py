@@ -1,3 +1,4 @@
+from hashlib import new
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import json
@@ -5,6 +6,7 @@ from .models import manga, extension, chapter
 from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.download_extensions import download_extension
 from main.Backend.extensions.search_manga import search
+from main.Backend.extensions.add_manga import newManga
 import requests
 import sys
 import ast
@@ -27,7 +29,12 @@ def browse(response):
         SearchQuery = response.GET.get('search_box', None)
         if SearchQuery is not None:
             results = search(SearchQuery)
-            print(results)
+            for k,v in results.items():
+                ext = extension.objects.get(name=k)
+                for k2, v2 in v.items():
+                    if manga.objects.all().filter(title=k2, source=ext.id).exists():
+                        print(k2)
+
     if response.method == "POST":
         # print(response.POST['mangaInfo'])
         response.session['mangaInfo'] = response.POST['mangaInfo']
@@ -69,21 +76,25 @@ def comic(response, id, inLibrary):
     elif inLibrary == 0:
         mangaInfo = response.session.get('mangaInfo').split(',')
         ext = extension.objects.get(name=mangaInfo[0])
+        if response.method == "POST":
+            # newItem = manga.objects.create(name="")
+            mangaId = newManga(ext, response.session.get("chapters"), response.session.get("metaData"))
+            return redirect(f'/comic/1/{mangaId}')
         sys.path.insert(0, ext.path)
         import source
         comic = source.GetMetadata(mangaInfo[1])
-        if response.method == "POST":
-            # newItem = manga.objects.create(name="")
-            print(comic)
         
         chapters = source.GetChapters(mangaInfo[1])
-        response.session['Chapters'] = chapters
+        # print(mangaInfo[1])
+        # print(chapters)
+        response.session['chapters'] = chapters
+        response.session['metaData'] = comic
         return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
 
     return render(response, "main/comic.html", {"comic":comic, "chapters":chapters})
 
-def read(response, inLibrary, comicId, chapterIndex):
-    currentChapter = chapter.objects.get(index=chapterIndex)
+def read(response, inLibrary, comicId, chapterId):
+    currentChapter = chapter.objects.get(id=chapterId)
     comic = manga.objects.get(id=comicId)
     if response.method == "POST":
         data = json.loads(response.body)

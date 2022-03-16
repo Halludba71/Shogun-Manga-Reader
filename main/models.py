@@ -26,6 +26,7 @@ class manga(models.Model):
 	author = models.TextField(default="", blank=True)
 	orientation = models.TextField(default="left-to-right")
 	NumChapters = models.IntegerField(default=0)
+	url = models.TextField(default="")
 	def chapters_to_arr(self):
 		return json.loads(self.chapters)
 		
