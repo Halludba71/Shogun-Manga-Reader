@@ -11,14 +11,38 @@
 <!-- Put the manga name on the right of the cover as well -->
 <div class="manga-info">
     <img class="manga-cover" src="{% static comic.cover %}" alt="" width="176" height="264.26">
-    <h1  class="manga-name">{{comic}}</h1>
+    <h1 class="manga-name">{{comic}}</h1>
     <h3>By {{comic.author}}</h3>
+    <div class="dropdown">
+        <button class="dropdown-button" onclick="showDropdown()">In Library</button>
+        <div id="dropdown-content" class="dropdown-content">
+            <button>Change Categories</button>
+            <button onclick="window.confirmationDialog.showModal()">Remove from library</button>
+        </div>
+    </div>
+    <br>
+    <div class="tooltip">
+        <span class="tooltipText">View Source</span>
+        <button class="tool">
+            <a href="{{comic.url}}" target="_blank">
+                <img src="{% static 'images/link.svg' %}" alt="">
+            </a>
+        </button>
+    </div>
     <h4 class="manga-description">
         {{comic.description}}
     </h4>
     <!-- <h1>Chapters</h1> -->
 </div>
 <br>
+<dialog id="confirmationDialog">
+    <p>
+        Are you sure you would like to remove manga from library?
+        Removing manga will delete chapters and progress.
+    </p>
+    <button class="confirmYes" onclick="removeFromLibrary()">Yes</button>
+    <button class="confirmNo" onclick="window.confirmationDialog.close();">No</button>
+  </dialog>
 <div class="manga-chapters">
     <div class="top-row">
         <h2>Chapters</h2>
@@ -198,6 +222,29 @@
                 }
             }
             }
+    }
+
+    function showDropdown() {
+        document.getElementById("dropdown-content").classList.toggle("show");
+    }
+
+    // Close the dropdown menu if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown-button')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+            }
+        }
+    }
+
+    function removeFromLibrary(){
+        window.confirmationDialog.close();
+        alert("testing")
     }
 </script>
    

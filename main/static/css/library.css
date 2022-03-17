@@ -19,3 +19,17 @@ img.book-cover{
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 20px;
 }
+
+.search_box{
+  padding: 10px;
+  margin-bottom: 1rem;
+  background-color: #141418;
+  color: white;
+  outline: none;
+  border: 1px solid #748899;
+  border-radius: 10px;
+}
+
+.dropdown{
+  visibility: hidden;
+}
