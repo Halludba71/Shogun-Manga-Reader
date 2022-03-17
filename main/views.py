@@ -33,7 +33,8 @@ def browse(response):
                 ext = extension.objects.get(name=k)
                 for k2, v2 in v.items():
                     if manga.objects.all().filter(title=k2, source=ext.id).exists():
-                        print(k2)
+                        mangaInLibrary = manga.objects.get(title=k2, source=ext.id)
+                        results[k][k2] = [mangaInLibrary.id, mangaInLibrary.cover, True]
 
     if response.method == "POST":
         # print(response.POST['mangaInfo'])

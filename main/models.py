@@ -22,7 +22,7 @@ class manga(models.Model):
 	type = models.CharField(max_length=6,choices=options, default='Manga')
 	description = models.TextField(default=None, blank=True)
 	categories = models.TextField(default="All,")
-	source = models.TextField(default="", blank=True)
+	source = models.IntegerField()
 	author = models.TextField(default="", blank=True)
 	orientation = models.TextField(default="left-to-right")
 	NumChapters = models.IntegerField(default=0)
