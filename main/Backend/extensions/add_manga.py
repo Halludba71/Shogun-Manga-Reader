@@ -17,7 +17,7 @@ def newManga(ext, chapters, metaData):
         cover.write(request.content)
 
     newManga = manga.objects.create(title=metaData["name"], url=metaData["url"], cover=fileName, description=metaData["description"], source=ext.id, author=metaData["author"], orientation="vertical", NumChapters=numChapters)
-
+    reversed = chapters[::-1]
     for item in chapters:
-        chapter.objects.create(name=item["name"], url=item["url"], comicId=newManga.id, index=chapters.index(item)+1)
+        chapter.objects.create(name=item["name"], url=item["url"], comicId=newManga.id, index=reversed.index(item)+1)
     return newManga.id

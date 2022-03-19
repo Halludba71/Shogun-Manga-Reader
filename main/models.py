@@ -27,6 +27,7 @@ class manga(models.Model):
 	orientation = models.TextField(default="left-to-right")
 	NumChapters = models.IntegerField(default=0)
 	url = models.TextField(default="")
+	leftToRead = models.IntegerField()
 	def chapters_to_arr(self):
 		return json.loads(self.chapters)
 		
@@ -61,8 +62,11 @@ class chapter(models.Model):
 	def __str__(self):
 		return self.name
 	
-class categories(models.Model):
+class categorie(models.Model):
 	name = models.TextField(default='', blank=True)
-
 	def __str__(self):
 		return self.name
+
+class mangaCategorie(models.Model):
+	categoryid = models.IntegerField()
+	mangaid = models.IntegerField()

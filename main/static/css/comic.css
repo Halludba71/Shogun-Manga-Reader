@@ -187,3 +187,35 @@ button:hover.tool{
     cursor: pointer;
     box-shadow: none;
 }
+
+/* .disabled button{
+    background-color: #0000dd;
+    border: 5px solid #1a1a1b;
+    box-shadow: none;
+    color: #3d3e41;
+} */
+
+.continue-reading button{
+    margin-top: 10px;
+    background-color: #2d89e3;
+    border: 5px solid #2d89e3;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.continue-reading button:hover{
+    background-color: #519fd3;
+    border: 5px solid #519fd3;
+}
+
+.continue-reading button:disabled{
+    background-color: #2b2b2e;
+    border: 5px solid #2b2b2e;
+    box-shadow: none;
+    cursor:not-allowed;
+    color: #71717a;
+}

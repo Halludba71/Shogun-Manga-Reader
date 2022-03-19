@@ -1,6 +1,6 @@
 from hashlib import new
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import json
 from .models import manga, extension, chapter
 from main.Backend.extensions.extension_list import ext_list
@@ -58,22 +58,49 @@ def novel(response, id):
 
 def comic(response, id, inLibrary):
     if inLibrary == 1:
-        if response.method == "POST":
-            data = json.loads(response.body)
-            if data["value"] == "read":
-                readChapter = chapter.objects.get(id=data["chapterid"])
-                readChapter.read = True
-                readChapter.lastRead = 0
-                readChapter.save()
-            if data["value"] == "unread":
-                unreadChapter = chapter.objects.get(id=data["chapterid"])
-                unreadChapter.read = False
-                unreadChapter.lastRead = 0
-                unreadChapter.save()
-
         comic = manga.objects.get(id=id)
         chapters = chapter.objects.all().filter(comicId=id)
+        if response.method == "POST":
+            method = response.POST["editManga"]
+            if method == "markRead":
+                readChapters = response.POST.getlist("checkbox")
+                for chapterId in readChapters:
+                    readChapter = chapter.objects.get(id=chapterId)
+                    if readChapter.read == False:
+                        readChapter.read = True
+                        readChapter.lastRead = 0
+                        readChapter.save()
+                        comic.leftToRead -= 1
+                        comic.save()
+            if method == "markUnread":
+                unreadChapters = response.POST.getlist("checkbox")
+                for chapterId in unreadChapters:
+                    unreadChapter = chapter.objects.get(id=chapterId)
+                    if unreadChapter.read == True:
+                        unreadChapter.read = False
+                        unreadChapter.lastRead = 0
+                        unreadChapter.save()
+                        comic.leftToRead += 1
+                        comic.save()
+            if method == "removeManga":
+                for item in chapters:
+                    item.delete()
+                comic.delete()
+                return redirect("/library/")
 
+        ordered = chapters.order_by('index')
+        if len(ordered) > 0:
+            nextChapter = ordered[0].index
+            for item in ordered:
+                if item.read == False:
+                    break
+                else:
+                    nextChapter = item.index
+            if nextChapter+1 <= comic.NumChapters:
+                nextChapter = chapter.objects.get(index=nextChapter+1, comicId=comic.id).id
+            else:
+                nextChapter = -1
+            print(nextChapter)
     elif inLibrary == 0:
         mangaInfo = response.session.get('mangaInfo').split(',')
         ext = extension.objects.get(name=mangaInfo[0])
@@ -92,7 +119,7 @@ def comic(response, id, inLibrary):
         response.session['metaData'] = comic
         return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
 
-    return render(response, "main/comic.html", {"comic":comic, "chapters":chapters})
+    return render(response, "main/comic.html", {"comic":comic, "chapters":chapters, "nextChapter": nextChapter})
 
 def read(response, inLibrary, comicId, chapterId):
     currentChapter = chapter.objects.get(id=chapterId)
@@ -101,8 +128,11 @@ def read(response, inLibrary, comicId, chapterId):
         data = json.loads(response.body)
         if data["value"] == "Completed":
             currentChapter.lastRead = data['lastRead']
-            currentChapter.read = True
-            currentChapter.save()
+            if currentChapter.read == False:
+                currentChapter.read = True
+                currentChapter.save()
+                comic.leftToRead -= 1
+                comic.save()
         if data["value"] == "orientation":
             comic.orientation = data['orientation']
             comic.save()

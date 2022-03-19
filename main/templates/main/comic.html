@@ -29,6 +29,19 @@
             </a>
         </button>
     </div>
+    <div class="continue-reading">
+        {% if nextChapter == -1 %}
+            <button class="disabled" disabled>
+                All chapters read
+            </button>
+        {% else %}
+            <a href="/read/1/{{comic.id}}/{{nextChapter}}">
+                <button>
+                        Continue Reading
+                </button>
+            </a>
+        {% endif %}
+    </div>
     <h4 class="manga-description">
         {{comic.description}}
     </h4>
@@ -40,9 +53,12 @@
         Are you sure you would like to remove manga from library?
         Removing manga will delete chapters and progress.
     </p>
-    <button class="confirmYes" onclick="removeFromLibrary()">Yes</button>
+    <form action="/comic/1/{{comic.id}}" method="post">
+        {% csrf_token %}
+        <button class="confirmYes" type="submit" name="editManga" value="removeManga">Yes</button> <!-- removeFromLibrary()-->
+    </form>
     <button class="confirmNo" onclick="window.confirmationDialog.close();">No</button>
-  </dialog>
+</dialog>
 <div class="manga-chapters">
     <div class="top-row">
         <h2>Chapters</h2>
@@ -54,92 +70,99 @@
         </div>
     </div>
         
+    <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
+    <form action="/comic/1/{{comic.id}}" method="post">
+    {% csrf_token %}
     <div class="toolContainer">
-        <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
         <div class="chapterEditor hidden" id="chapterEditor">
             <div class="tooltip">
-                <span class="tooltipText">Cancel</span>
-                <button class="tool" onclick="CancelSelection()">
+                <span class="tooltipText">Cancel Selection</span>
+                <button type="reset" class="tool" onclick="CancelSelection()">
                     <img src="{% static 'images/unselect_all.svg' %}" alt="">
                 </button class="tool">
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Select All</span>
-                <button class="tool" onclick="selectAll()">
+                <button type="button" class="tool" onclick="selectAll()">
                     <img src="{% static 'images/select_all.svg' %}" alt="">
                 </button class="tool">
             </div>
             <div class="tooltip">
+                <span class="tooltipText">Select Previous</span>
+                <button type="button" class="tool">
+                    <img src="{% static 'images/select_previous.svg' %}" width="24" height="24" alt="">
+                </button class="tool">
+            </div>
+            <div class="tooltip">
                 <span class="tooltipText">Select Unselected</span>
-                <button class="tool" onclick="selectUnselected()">
+                <button type="button" class="tool" onclick="selectPrevious()">
                     <img src="{% static 'images/select_unselected.svg' %}" alt="">
                 </button class="tool">
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Download Selected Chapters</span>
-                <button class="tool">
+                <button type="button" class="tool">
                     <img src="{% static 'images/download.svg' %}" alt="">
                 </button class="tool">
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Mark selected chapters as read</span>
-                <button class="tool" onclick="markRead()">
+                <button type="submit" name="editManga" value="markRead" class="tool"> <!--onclick="markRead()" -->
                     <img src="{% static 'images/read.svg' %}" alt="">
                 </button class="tool">
             </div>
             <div class="tooltip">
-                <span class="tooltipText">Mark selected chapters as unread</span>
-                <button class="tool" onclick="markUnread()">
+                <span class="tooltipText">Mark selected chapters as unread</span> <!-- need to add type submit here-->
+                <button type="submit" class="tool" name="editManga" value="markUnread">
                     <img src="{% static 'images/unread.svg' %}" alt="">
                 </button class="tool">
             </div>
         </div>
     </div>
-    <table id="chapters">
-        {% for chapter in chapters %}
-        <tr>
-            <td>
-                <input type="checkbox" value="{{chapter.id}}" name="checkbox" onchange="checkBoxChange()">
-            </td>
-            <td>
-                <a href="/read/1/{{ comic.id }}/{{ chapter.id }}">
-                    <div class="chapterLink">
-                        {% if chapter.read == True %}
-                        <p class="read" value="{{chapter.id}}">{{ chapter }}</p>
-                        {% else %}
-                        <p>{{ chapter }}</p>
-                        {% endif %}
-                    </div>
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-</form>
-    
-                
-    
-
+        <table id="chapters">
+            {% for chapter in chapters %}
+            <tr>
+                <td>
+                    <input type="checkbox" value="{{chapter.id}}" name="checkbox" onchange="checkBoxChange()">
+                </td>
+                <td>
+                    <a href="/read/1/{{ comic.id }}/{{ chapter.id }}">
+                        <div class="chapterLink">
+                            {% if chapter.read == True %}
+                            <p class="read" value="{{chapter.id}}">{{ chapter }}</p>
+                            {% else %}
+                            <p>{{ chapter }}</p>
+                            {% endif %}
+                        </div>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </form>
 </div>
+
 <script>
     var editing = false;
     chapterEditor = document.getElementById('chapterEditor');
     checkboxes = Array.from(document.getElementsByName('checkbox'));
     
     function markUnread(){
+        var chapterids = [];
         checkboxes.forEach(checkbox =>{
             if(checkbox.checked == true){
                 checkbox.parentElement.parentElement.lastElementChild.firstElementChild.firstElementChild.firstElementChild.className = "unread";
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", document.URL, true);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-                xhr.send(JSON.stringify({
-                    "value": "unread",
-                    "chapterid": checkbox.value
-            }));
+                chapterids.push(checkbox.value);
             }
         });
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", document.URL, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+        xhr.send(JSON.stringify({
+            "value": "unread",
+            "chapterids": chapterids
+        }));
         editing = false;
         chapterEditor.className = "chapterEditor hidden";
         unselectAll();
@@ -165,19 +188,22 @@
     }
 
     function markRead(){
+        var chapterids = [];
         checkboxes.forEach(checkbox =>{
             if(checkbox.checked == true){
+                chapterids.push(checkbox.value)
                 checkbox.parentElement.parentElement.lastElementChild.firstElementChild.firstElementChild.firstElementChild.className = "read";
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", document.URL, true);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-                xhr.send(JSON.stringify({
-                    "value": "read",
-                    "chapterid": checkbox.value
-            }));
             }
         });
+                
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", document.URL, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+        xhr.send(JSON.stringify({
+            "value": "read",
+            "chapterids": chapterids
+        }));
         editing = false;
         chapterEditor.className = "chapterEditor hidden";
         unselectAll();
@@ -244,7 +270,23 @@
 
     function removeFromLibrary(){
         window.confirmationDialog.close();
-        alert("testing")
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 302) {
+                var json = JSON.parse(this.responseText); 
+                console.log(json.success);
+                //following line would actually change the url of your window.  
+                window.location.href = json.success; 
+            }
+        };
+            xhr.open("POST", document.URL, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+            xhr.send(JSON.stringify({
+                "value": "removeManga",
+                // "chapterid": checkbox.value
+        }));
+        // window.location.replace("/library/")
     }
 </script>
    

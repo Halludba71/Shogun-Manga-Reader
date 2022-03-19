@@ -30,6 +30,18 @@ img.book-cover{
   border-radius: 10px;
 }
 
-.dropdown{
-  visibility: hidden;
+.leftToRead{
+  border-radius: 6px;
+  background-color: #2d89e3;
+  color: #141418;
+  float: left;
+  position: absolute;
+  z-index: 1000;
+  font-weight: bold;
+  padding: 3px;
+  padding-right: 5px;
+  padding-left: 8px;
+}
+.container{
+  position: relative;
 }
