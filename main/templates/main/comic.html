@@ -224,12 +224,27 @@
             }
         });
     }
+
+    {% comment %} function selectPrevious(){
+        reversed = checkboxes.reverse();
+        reversed.forEach(checkbox =>{
+            if(checkbox.parentElement.parentElement.style.display != "none"{
+                if(checkbox.checked == false){
+                    checkbox.checked = true;
+                } else if(checkbox.checked == true){
+                    break;
+                }
+            })
+        })
+    } {% endcomment %}
+
     function checkBoxChange(){
         if(editing == false){
             editing = true;
             chapterEditor.className = "chapterEditor";
         }
     }
+
     function SearchChapters(){
         if(editing == false){
             var input = document.getElementById("search_box")
