@@ -95,7 +95,7 @@
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Select Unselected</span>
-                <button type="button" class="tool" onclick="selectPrevious()">
+                <button type="button" class="tool" onclick="selectUnselected()">
                     <img src="{% static 'images/select_unselected.svg' %}" alt="">
                 </button class="tool">
             </div>
@@ -107,12 +107,12 @@
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Mark selected chapters as read</span>
-                <button type="submit" name="editManga" value="markRead" class="tool"> <!--onclick="markRead()" -->
+                <button type="submit" name="editManga" value="markRead" class="tool">
                     <img src="{% static 'images/read.svg' %}" alt="">
                 </button class="tool">
             </div>
             <div class="tooltip">
-                <span class="tooltipText">Mark selected chapters as unread</span> <!-- need to add type submit here-->
+                <span class="tooltipText">Mark selected chapters as unread</span>
                 <button type="submit" class="tool" name="editManga" value="markUnread">
                     <img src="{% static 'images/unread.svg' %}" alt="">
                 </button class="tool">
@@ -225,18 +225,18 @@
         });
     }
 
-    {% comment %} function selectPrevious(){
+    {/* function selectPrevious(){
         reversed = checkboxes.reverse();
         reversed.forEach(checkbox =>{
-            if(checkbox.parentElement.parentElement.style.display != "none"{
-                if(checkbox.checked == false){
+            if(checkbox.parentElement.parentElement.style.display !="none"){
+                if(checkbox.checked == false) {
                     checkbox.checked = true;
-                } else if(checkbox.checked == true){
-                    break;
+                } else{
+                    reversed.length = reversed.length + 1;
                 }
-            })
-        })
-    } {% endcomment %}
+            }
+        });
+    } */}
 
     function checkBoxChange(){
         if(editing == false){
