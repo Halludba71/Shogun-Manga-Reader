@@ -1,0 +1,8 @@
+.download_list{
+    overflow: hidden;
+    margin: auto;
+    padding: 20px;
+    max-width: 75%;
+    border-radius: 10px;
+    background-color:#23232b;
+}

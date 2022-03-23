@@ -1,15 +1,19 @@
 from hashlib import new
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-import json
-from .models import manga, extension, chapter
+from .models import manga, extension, chapter, download
 from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.download_extensions import download_extension
 from main.Backend.extensions.search_manga import search
 from main.Backend.extensions.add_manga import newManga
+from win10toast import ToastNotifier
 import requests
 import sys
 import ast
+import json
+import os
+import shutil
+
 # from .reader import * # This line is currently not needed
 # Create your views here.
 
@@ -87,6 +91,43 @@ def comic(response, id, inLibrary):
                     item.delete()
                 comic.delete()
                 return redirect("/library/")
+            if method == "downloadSelected":
+                ext = extension.objects.get(id=comic.source)
+                sys.path.insert(0, ext.path)
+                import source
+                selectedChapters = response.POST.getlist("checkbox")
+                print(len(selectedChapters))
+                for chapterId in selectedChapters:
+                    selectedChapter  = chapter.objects.get(id=chapterId)
+                    if selectedChapter.downloaded == False:
+                        download.objects.create(name=selectedChapter.name, chapterid=selectedChapter.id)
+                    if selectedChapter.downloaded == True:
+                        selectedChapters.remove(chapterId)
+                toast = ToastNotifier()
+                toast.show_toast(
+                    f'{len(selectedChapters)} Chapter(s) Are Being Downloaded',
+                    'Check progress in the downloads page.',
+                    duration=3,
+                )
+                for chapterId in selectedChapters:
+                    if selectedChapter.downloaded == False:
+                        selectedChapter = chapter.objects.get(id=chapterId)
+                        chapterDownloading = download.objects.get(chapterid=selectedChapter.id)
+                        images = source.GetImageLinksNoProxy(selectedChapter.url)
+
+                        chapterDownloading.totalPages = len(images)
+                        chapterDownloading.save()
+                        source.DownloadChapter(images, comic.id, selectedChapter.id, chapterDownloading.id)
+            if method == "deleteDownloaded":
+                selectedChapters = response.POST.getlist("checkbox")
+                for chapterId in selectedChapters:
+                    selectedChapter  = chapter.objects.get(id=chapterId)
+                    if selectedChapter.downloaded == True:
+                        path = f"{os.getcwd()}\main\static\manga\{comic.id}\{chapterId}"
+                        if os.path.exists(path):
+                            shutil.rmtree(path)
+                        selectedChapter.downloaded = False
+                        selectedChapter.save()
 
         ordered = chapters.order_by('index')
         if len(ordered) > 0:
@@ -96,10 +137,13 @@ def comic(response, id, inLibrary):
                     break
                 else:
                     nextChapter = item.index
-            if nextChapter+1 <= comic.NumChapters:
-                nextChapter = chapter.objects.get(index=nextChapter+1, comicId=comic.id).id
+            if nextChapter > 1:
+                if nextChapter+1 <= comic.NumChapters:
+                    nextChapter = chapter.objects.get(index=nextChapter+1, comicId=comic.id).id
+                else:
+                    nextChapter = -1
             else:
-                nextChapter = -1
+                nextChapter = chapter.objects.get(index=nextChapter, comicId=comic.id).id
             print(nextChapter)
     elif inLibrary == 0:
         mangaInfo = response.session.get('mangaInfo').split(',')
@@ -141,13 +185,29 @@ def read(response, inLibrary, comicId, chapterId):
             currentChapter.save()
 
     if inLibrary == 1:
-        ext = extension.objects.get(id=comic.source)
-        sys.path.insert(0, ext.path)
-        import source
-        images = source.GetImageLinks(currentChapter.url)
+        if currentChapter.downloaded == True:
+            path = f"{os.getcwd()}\main\static\manga\{comicId}\{chapterId}"
+            unsorted_images = os.listdir(path)
+            images = []
+            for i in range(1, len(unsorted_images)+1):
+                if "1.png" in unsorted_images:
+                    images.append(f"manga/{comicId}/{chapterId}/" + unsorted_images[unsorted_images.index(f"{str(i)}.png")])
+                if "1.jpg" in unsorted_images:
+                    images.append(f"manga/{comicId}/{chapterId}/" + unsorted_images[unsorted_images.index(f"{str(i)}.jpg")])
+            print(images)
+        else:
+            ext = extension.objects.get(id=comic.source)
+            sys.path.insert(0, ext.path)
+            import source
+            images = source.GetImageLinks(currentChapter.url)
 
     return render(response, "main/read.html", {"comic": comic, "chapter": currentChapter, "images": images})
     # return render(response, "main/read.html", {"comic": comic, "chapter": chapter})
+
+def downloads(response):
+    currentDownloads = download.objects.all()
+
+    return render(response, "main/downloads.html", {"downloads": currentDownloads})
 
 def bypass(response, imageUrl):
     headers = {

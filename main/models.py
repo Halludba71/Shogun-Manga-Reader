@@ -58,6 +58,7 @@ class chapter(models.Model):
 	lastRead = models.IntegerField(default=0)
 	comicId = models.IntegerField()
 	index = models.IntegerField()
+	downloaded = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.name
@@ -70,3 +71,9 @@ class categorie(models.Model):
 class mangaCategorie(models.Model):
 	categoryid = models.IntegerField()
 	mangaid = models.IntegerField()
+
+class download(models.Model):
+	name = models.TextField(default="")
+	chapterid = models.IntegerField()
+	totalPages = models.IntegerField(default=0)
+	downloaded = models.IntegerField(default=0)

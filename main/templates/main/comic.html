@@ -62,11 +62,17 @@
 <div class="manga-chapters">
     <div class="top-row">
         <h2>Chapters</h2>
-        <div class="tooltip">
-            <span class="tooltipText">Filter chapters</span>
-            <button class="tool">
-                <img src="{% static 'images/filter.svg' %}" alt="">
-            </button class="tool">
+        <div class="dropdown">
+            <div class="tooltip">
+                <span class="tooltiptext">Filter Chapters</span>
+                <button class="filter-dropdown-button" onclick="showDropdown('filter')">
+                    <img src="{% static 'images/filter.svg' %}" alt="">
+                </button>
+            </div>
+            <div id="filter-dropdown-content" class="filter-dropdown-content">
+                <button>Change Categories</button>
+                <button onclick="window.confirmationDialog.showModal()">Remove from library</button>
+            </div>
         </div>
     </div>
         
@@ -88,8 +94,8 @@
                 </button class="tool">
             </div>
             <div class="tooltip">
-                <span class="tooltipText">Select Previous</span>
-                <button type="button" class="tool">
+                <span class="tooltipText">Delete If Downloaded Is Selected</span>
+                <button type="submit" name="editManga" value="deleteDownloaded" class="tool">
                     <img src="{% static 'images/select_previous.svg' %}" width="24" height="24" alt="">
                 </button class="tool">
             </div>
@@ -101,7 +107,7 @@
             </div>
             <div class="tooltip">
                 <span class="tooltipText">Download Selected Chapters</span>
-                <button type="button" class="tool">
+                <button type="submit" name="editManga" value="downloadSelected" class="tool">
                     <img src="{% static 'images/download.svg' %}" alt="">
                 </button class="tool">
             </div>
@@ -136,6 +142,11 @@
                         </div>
                     </a>
                 </td>
+                {% if chapter.downloaded == True %}
+                <td>
+                    <p class="downloaded">Downloaded</p>
+                </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </table>
@@ -265,8 +276,12 @@
             }
     }
 
-    function showDropdown() {
-        document.getElementById("dropdown-content").classList.toggle("show");
+    function showDropdown(value) {
+        if(value == 'filter'){
+            document.getElementById("filter-dropdown-content").classList.toggle("show");
+        } else{
+            document.getElementById("dropdown-content").classList.toggle("show");
+        }
     }
 
     // Close the dropdown menu if the user clicks outside of it
@@ -279,6 +294,15 @@
             if (openDropdown.classList.contains('show')) {
                 openDropdown.classList.remove('show');
             }
+            }
+        } else if (!event.target.matches('.filter-dropdown-button')){
+            var dropdowns = document.getElementsByClassName("filter-dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
             }
         }
     }

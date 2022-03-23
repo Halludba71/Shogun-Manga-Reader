@@ -81,18 +81,32 @@
 
         <!-- NO need to make this a base template since this will not include the side bar -->
         <div class="image-container" id="image-container" data-orientation="horizontal">
-            {% for image in images %}  
-            {% if forloop.counter0 == chapter.lastRead %}
-            <div class="image">
-                <img src="{{image}}">
-            </div>
-            
+            {% if chapter.downloaded  == True%}
+                {% for image in images %}  
+                {% if forloop.counter0 == chapter.lastRead %}
+                <div class="image">
+                    <img src="{% static image %}">
+                </div>
+                
+                {% else %}
+                <div class="image hide">
+                    <img src="{% static image %}">
+                </div>
+                {% endif %}
+                {% endfor %}
             {% else %}
-            <div class="image hide">
-                <img src="{{image}}">
-            </div>
+                {% for image in images %}  
+                {% if forloop.counter0 == chapter.lastRead %}
+                <div class="image">
+                    <img src="{{image}}">
+                </div>
+                {% else %}
+                <div class="image hide">
+                    <img src="{{image}}">
+                </div>
+                {% endif %}
+                {% endfor %}
             {% endif %}
-            {% endfor %}
         </div>
         
     </main>

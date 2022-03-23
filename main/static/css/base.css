@@ -104,3 +104,13 @@ h1 {
 .extensions:hover{
     filter: invert(64%) sepia(80%) saturate(4587%) hue-rotate(190deg) brightness(98%) contrast(92%);
 }
+
+.downloads:hover{
+    filter: invert(64%) sepia(80%) saturate(4587%) hue-rotate(190deg) brightness(98%) contrast(92%);
+}
+
+.downloads{
+    filter: invert(60%) sepia(80%) saturate(913%) hue-rotate(166deg) brightness(87%) contrast(2%);
+    padding-left: 0px;
+    padding-top: 15px;
+}

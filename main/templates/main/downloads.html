@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block extra_head_content %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/downloads.css' %}">
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h2>Downloads</h2>
+<table class="download_list">
+    {% if downloads|length == 0%}
+    <tr>
+        <td>
+            <p>Nothing to see here !</p>
+        </td>
+    </tr>
+    {% else %}
+    {% for download in downloads %}
+    <tr>
+        <td>
+            <p>{{download.name}}</p>
+        </td>
+        <td>
+            <p>{{download.downloaded}}/{{download.totalPages}}</p>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+</table>
+<script>
+    {% if downloads|length == 0 %}
+    var downloading = false;
+    {% else %}
+    var downloading = true
+    {% endif %}
+    if(downloading == true){
+        setTimeout(window.location.reload(), 1600);
+    }
+</script>
+{% endblock%}

@@ -1,9 +1,10 @@
+from turtle import down
 import requests
 import re
 from bs4 import BeautifulSoup
 import os
 import base64
-
+from main.models import chapter, download
 proxy = "/bypass/"
 
 def SearchManga(query):
@@ -75,22 +76,45 @@ def GetImageLinks(page_url):
     # urls = [proxy+image["src"] for image in soup.findAll("img")] - the previous url
     return urls
 
+def GetImageLinksNoProxy(page_url):
+    """
+    scrapes links for all images of a specific chapter
+    """
+    data = requests.get(page_url)
+    lines = (data.text).splitlines()
+    for line in lines:
+        if "container-chapter-reader" in line:
+            index = lines.index(line)
+    images = lines[index+1]
+    soup = BeautifulSoup(images, 'html.parser')
+    urls = [image["src"] for image in soup.findAll("img")]
+    # urls = [proxy+image["src"] for image in soup.findAll("img")] - the previous url
+    return urls
 
-def DownloadChapter(urls, Name):
+def DownloadChapter(urls, comicid, chapterId, downloadId):
     # Takes in url for a manga page and downloads it
     # for now the images are going to be downloaded in the working directory
     headers = {
         'Referer': "https://readmanganato.com/",
     }
-    path = f"{os.getcwd()}/{Name}"
+    path = f"{os.getcwd()}\main\static\manga\{comicid}\{chapterId}"
     if not os.path.exists(path):
-        os.mkdir(path)
-    for url in urls:
+        os.makedirs(path)
+
+    for index,url in enumerate(urls):
         response = requests.get(url, headers=headers)
-        file_name = path + "/" + re.findall(r"/(\d.jpg|\d\d.jpg|\d\d\d.jpg)$", url)[0]
+        file_name = f"{path}/{index+1}.{url[len(url)-3::]}"
+        print(file_name)
+        chapterToDownload = download.objects.get(id=downloadId)
         with open(file_name, "wb") as image:
             image.write(response.content)
 
+        chapterToDownload.downloaded += 1
+        chapterToDownload.save()
+    chapterToDownload = chapter.objects.get(id=chapterId)
+    chapterToDownload.downloaded = True
+    chapterToDownload.save()
+    download.objects.get(id=downloadId).delete()
 def imageToBase64(url):
     headers = {
         'Referer': "https://readmanganato.com/",
@@ -99,4 +123,4 @@ def imageToBase64(url):
     src = (f"data:{r.headers['Content-Type']};base64, {(base64.b64encode(r.content)).decode('UTF-8')}")
     return src
 
-# print(GetChapters("https://readmanganato.com/manga-aa951409"))
+# (DownloadChapter([], 12, 1032))
