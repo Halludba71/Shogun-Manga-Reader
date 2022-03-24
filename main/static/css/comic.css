@@ -125,6 +125,11 @@ button:hover.tool{
     visibility: visible;
 }
 
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
 .dropdown-button{
     background-color: #2d89e3;
     border: 5px solid #2d89e3;
@@ -142,26 +147,7 @@ button:hover.tool{
 
 }
 
-.filter-dropdown-button{
-    background-color: #363738;
-    border: 4px solid #363738;
-    padding: 1px;
-    border-radius: 6px;
-    cursor: pointer;
-    box-shadow: none;
-}
 
-.filter-dropdown-button:hover, .filter-dropdown-button:focus{
-    transition: 0.2s ease-in;
-    border: 4px solid #262729;
-    background-color: #262729;
-}
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-  
 .dropdown-content {
     display: none;
     position: absolute;
@@ -169,13 +155,7 @@ button:hover.tool{
     z-index: 1;
 }
 
-.filter-dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f1f1f1;
-    z-index: 1;
-}
-  
+
 /* Links inside the dropdown */
 .dropdown-content button {
     background-color: #2d89e3;
@@ -191,18 +171,24 @@ button:hover.tool{
     color: #fff;
 }
 
-.filter-dropdown-content button {
-    background-color: #2d89e3;
-    border: 5px solid #2d89e3;
+
+
+
+
+.filter-button{
+    background-color: #363738;
+    border: 4px solid #363738;
+    padding: 1px;
+    border-radius: 6px;
     cursor: pointer;
     box-shadow: none;
-    
+    margin-bottom: 10px;
 }
 
-.filter-dropdown-content button:hover {
-    background-color: #519fd3;
-    border: 5px solid #519fd3;
-    color: #fff;
+.filter-button:hover, .filter-button:focus{
+    transition: 0.2s ease-in;
+    border: 4px solid #262729;
+    background-color: #262729;
 }
 
 .show {
@@ -262,4 +248,12 @@ a {
 
 .downloaded{
     color: #40a559;
+}
+
+.close-filter{
+    float: right;
+}
+
+.filter-buttons{
+    margin-top: 50px;
 }

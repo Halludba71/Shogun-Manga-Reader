@@ -64,6 +64,7 @@ def comic(response, id, inLibrary):
     if inLibrary == 1:
         comic = manga.objects.get(id=id)
         chapters = chapter.objects.all().filter(comicId=id)
+        all_chapters = chapters
         if response.method == "POST":
             method = response.POST["editManga"]
             if method == "markRead":
@@ -128,8 +129,16 @@ def comic(response, id, inLibrary):
                             shutil.rmtree(path)
                         selectedChapter.downloaded = False
                         selectedChapter.save()
-
-        ordered = chapters.order_by('index')
+            
+            if method == "showDownloaded":
+                chapters = chapter.objects.all().filter(comicId=id, downloaded=True)
+            if method == "showRead":
+                chapters = chapter.objects.all().filter(comicId=id, read=True)
+            if method == "showUnread":
+                chapters = chapter.objects.all().filter(comicId=id, read=False)
+            if method == "cancelFilter":
+                pass
+        ordered = all_chapters.order_by('index')
         if len(ordered) > 0:
             nextChapter = ordered[0].index
             for item in ordered:

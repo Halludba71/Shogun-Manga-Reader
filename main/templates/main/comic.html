@@ -59,21 +59,27 @@
     </form>
     <button class="confirmNo" onclick="window.confirmationDialog.close();">No</button>
 </dialog>
+<dialog id="filterChapters">
+    <button onclick="window.filterChapters.close()" class="close-filter">Close</button>
+    <div class="filter-buttons">
+        <form action="/comic/1/{{comic.id}}" method="post">
+            {% csrf_token %}
+            <button class="confirmNo" type="submit" name="editManga" value="showDownloaded">Show Downloaded</button>
+            <button class="confirmNo" type="submit" name="editManga" value="showRead">Show Read</button>
+            <button class="confirmNo" type="submit" name="editManga" value="showUnread">Show Unread</button>
+            <button class="confirmYes" type="submit" name="editManga" value="cancelFilter">Cancel Filter</button>
+        </form>
+    </div>
+</dialog>
 <div class="manga-chapters">
     <div class="top-row">
         <h2>Chapters</h2>
-        <div class="dropdown">
             <div class="tooltip">
                 <span class="tooltiptext">Filter Chapters</span>
-                <button class="filter-dropdown-button" onclick="showDropdown('filter')">
+                <button class="filter-button" onclick="window.filterChapters.showModal()">
                     <img src="{% static 'images/filter.svg' %}" alt="">
                 </button>
             </div>
-            <div id="filter-dropdown-content" class="filter-dropdown-content">
-                <button>Change Categories</button>
-                <button onclick="window.confirmationDialog.showModal()">Remove from library</button>
-            </div>
-        </div>
     </div>
         
     <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
