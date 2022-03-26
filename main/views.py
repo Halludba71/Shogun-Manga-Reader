@@ -1,4 +1,5 @@
 from hashlib import new
+from turtle import update
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import manga, extension, chapter, download
@@ -6,6 +7,7 @@ from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.download_extensions import download_extension
 from main.Backend.extensions.search_manga import search
 from main.Backend.extensions.add_manga import newManga
+from main.Backend.update import updateChapters, updateLibrary
 from win10toast import ToastNotifier
 import requests
 import sys
@@ -24,6 +26,10 @@ def redirect_view(response):
 
 def library(response):
     library = manga.objects.all
+    if response.method == "POST":
+            method = response.POST["editLibrary"]
+            if method == "updateLibrary":
+                updateLibrary()
     return render(response, "main/library.html", {'library': library})
 
 def browse(response):
@@ -144,31 +150,7 @@ def comic(response, id, inLibrary):
             if method == "cancelFilter":
                 pass
             if method == "updateChapters":
-                ext = extension.objects.get(id=comic.source)
-                sys.path.insert(0, ext.path)
-                import source
-                print(comic.url)
-                newChapters = source.GetChapters(comic.url) # fetches the data for chapters from source
-                reversed = newChapters[::-1]
-                for currentChapter in chapters:
-                    currentChapter.index = -1 # changes the index of all of the current chapters to -1
-                    currentChapter.save()
-                for newChapter in newChapters:
-                    chapter.objects.create(name=newChapter["name"], url=newChapter["url"], comicId=id, index=reversed.index(newChapter)+1)
-                ## TODO: Need to go through the database, link chapters by name and transfer properties such as downloaded and so on
-                chapters = chapter.objects.all().filter(comicId=id).exclude(index=-1)
-                updated = []
-                for newChapter in chapters:
-                    filtered = chapter.objects.filter(comicId=id, name=newChapter.name).order_by('index')
-                    if len(filtered) > 1:
-                        read, lastRead, downloaded = filtered[0].read, filtered[0].lastRead, filtered[0].downloaded
-                        filtered[1].read = read 
-                        filtered[1].lastRead = lastRead
-                        filtered[1].downloaded =  downloaded
-                        filtered[1].save()
-                        filtered[0].delete()
-                    else:
-                        updated.append(filtered[0].name)
+                updated = updateChapters(id)
                 if len(updated) > 0:
                     toast = ToastNotifier()
                     toast.show_toast(
@@ -176,9 +158,10 @@ def comic(response, id, inLibrary):
                         f"{','.join(updated)}",
                         duration=4,
                     )
-                leftToRead = len(chapter.objects.filter(comicId=id).exclude(read=True))
-                comic.leftToRead = leftToRead
-                comic.save()
+                    leftToRead = len(chapter.objects.filter(comicId=id).exclude(read=True))
+                    comic.leftToRead = leftToRead
+                    comic.save()
+
                 
         nextChapter = -1
         if len(ordered) > 0:

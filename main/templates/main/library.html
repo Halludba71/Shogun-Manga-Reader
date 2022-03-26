@@ -10,6 +10,15 @@
 {% block content %}
 <h2>Library</h2>
 <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search Library...">
+<div class="refresh-tooltip" id="refresh-button">
+  <span class="refresh-tooltipText">Update Library</span>
+  <form action="/library/" method="post">
+      {% csrf_token %}
+      <button type="submit" name="editLibrary" value="updateLibrary" class="tool">
+          <img src="{% static 'images/refresh.svg' %}" alt="">
+      </button>
+  </form>
+</div>
 <link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
 
 <div class="books" id="books">
