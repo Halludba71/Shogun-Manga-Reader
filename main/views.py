@@ -64,7 +64,7 @@ def comic(response, id, inLibrary):
     if inLibrary == 1:
         comic = manga.objects.get(id=id)
         chapters = chapter.objects.all().filter(comicId=id)
-        all_chapters = chapters
+        ordered = chapters.order_by('index')
         if response.method == "POST":
             method = response.POST["editManga"]
             if method == "markRead":
@@ -89,7 +89,12 @@ def comic(response, id, inLibrary):
                         comic.save()
             if method == "removeManga":
                 for item in chapters:
+                    if item.downloaded == True:
+                        path = f"{os.getcwd()}\main\static\manga\{comic.id}\{item.id}"
+                        if os.path.exists(path):
+                            shutil.rmtree(path)
                     item.delete()
+                os.remove(f"{os.getcwd()}/main/static/{comic.cover}")
                 comic.delete()
                 return redirect("/library/")
             if method == "downloadSelected":
@@ -138,7 +143,20 @@ def comic(response, id, inLibrary):
                 chapters = chapter.objects.all().filter(comicId=id, read=False)
             if method == "cancelFilter":
                 pass
-        ordered = all_chapters.order_by('index')
+            if method == "updateChapters":
+                ext = extension.objects.get(id=comic.source)
+                sys.path.insert(0, ext.path)
+                import source
+                print(comic.url)
+                newChapters = source.GetChapters(comic.url)
+                for i,newChapter in enumerate(newChapters):
+                    print(newChapter["name"])
+                    try:
+                        print(chapters[i].name)
+                    except:
+                        pass
+                
+        nextChapter = -1
         if len(ordered) > 0:
             nextChapter = ordered[0].index
             for item in ordered:
@@ -148,11 +166,11 @@ def comic(response, id, inLibrary):
                     nextChapter = item.index
             if nextChapter > 1:
                 if nextChapter+1 <= comic.NumChapters:
-                    nextChapter = chapter.objects.get(index=nextChapter+1, comicId=comic.id).id
+                    nextChapter = chapter.objects.get(index=nextChapter+1, comicId=comic.id).index
                 else:
                     nextChapter = -1
             else:
-                nextChapter = chapter.objects.get(index=nextChapter, comicId=comic.id).id
+                nextChapter = chapter.objects.get(index=nextChapter, comicId=comic.id).index
             print(nextChapter)
     elif inLibrary == 0:
         mangaInfo = response.session.get('mangaInfo').split(',')
@@ -172,10 +190,10 @@ def comic(response, id, inLibrary):
         response.session['metaData'] = comic
         return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
 
-    return render(response, "main/comic.html", {"comic":comic, "chapters":chapters, "nextChapter": nextChapter})
+    return render(response, "main/comic.html", {"comic":comic, "chapters":ordered.reverse(), "nextChapter": nextChapter})
 
-def read(response, inLibrary, comicId, chapterId):
-    currentChapter = chapter.objects.get(id=chapterId)
+def read(response, inLibrary, comicId, chapterIndex):
+    currentChapter = chapter.objects.get(comicId=comicId, index=chapterIndex)
     comic = manga.objects.get(id=comicId)
     if response.method == "POST":
         data = json.loads(response.body)

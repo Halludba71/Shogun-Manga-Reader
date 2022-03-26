@@ -23,7 +23,7 @@
 }
 
 .manga-info{
-    overflow: hidden;
+    /* overflow: hidden; */
     margin: auto;
     padding: 20px;
     max-width: 75%;
@@ -256,4 +256,32 @@ a {
 
 .filter-buttons{
     margin-top: 50px;
+}
+
+#refresh-button{
+    float: right;
+}
+
+.refresh-tooltip {
+    position: relative;
+    display: inline-block;
+}
+  
+.refresh-tooltip .refresh-tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: rgb(73, 71, 71);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 3px;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px;
+    margin-bottom: 10px;
+}
+  
+.refresh-tooltip:hover .refresh-tooltiptext {
+    visibility: visible;
 }

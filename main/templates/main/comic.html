@@ -11,6 +11,15 @@
 <!-- Put the manga name on the right of the cover as well -->
 <div class="manga-info">
     <img class="manga-cover" src="{% static comic.cover %}" alt="" width="176" height="264.26">
+    <div class="refresh-tooltip" id="refresh-button">
+        <span class="refresh-tooltipText">Update Chapters</span>
+        <form action="/comic/1/{{comic.id}}" method="post">
+            {% csrf_token %}
+            <button type="submit" name="editManga" value="updateChapters" class="tool">
+                <img src="{% static 'images/refresh.svg' %}" alt="">
+            </button>
+        </form>
+    </div>
     <h1 class="manga-name">{{comic}}</h1>
     <h3>By {{comic.author}}</h3>
     <div class="dropdown">
@@ -102,7 +111,7 @@
             <div class="tooltip">
                 <span class="tooltipText">Delete If Downloaded Is Selected</span>
                 <button type="submit" name="editManga" value="deleteDownloaded" class="tool">
-                    <img src="{% static 'images/select_previous.svg' %}" width="24" height="24" alt="">
+                    <img src="{% static 'images/delete.svg' %}" width="24" height="24" alt="">
                 </button class="tool">
             </div>
             <div class="tooltip">
@@ -138,7 +147,7 @@
                     <input type="checkbox" value="{{chapter.id}}" name="checkbox" onchange="checkBoxChange()">
                 </td>
                 <td>
-                    <a href="/read/1/{{ comic.id }}/{{ chapter.id }}">
+                    <a href="/read/1/{{ comic.id }}/{{ chapter.index }}">
                         <div class="chapterLink">
                             {% if chapter.read == True %}
                             <p class="read" value="{{chapter.id}}">{{ chapter }}</p>
