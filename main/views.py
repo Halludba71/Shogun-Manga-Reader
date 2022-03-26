@@ -63,7 +63,7 @@ def novel(response, id):
 def comic(response, id, inLibrary):
     if inLibrary == 1:
         comic = manga.objects.get(id=id)
-        chapters = chapter.objects.all().filter(comicId=id)
+        chapters = chapter.objects.all().filter(comicId=id).exclude(index=-1)
         ordered = chapters.order_by('index')
         if response.method == "POST":
             method = response.POST["editManga"]
@@ -148,13 +148,37 @@ def comic(response, id, inLibrary):
                 sys.path.insert(0, ext.path)
                 import source
                 print(comic.url)
-                newChapters = source.GetChapters(comic.url)
-                for i,newChapter in enumerate(newChapters):
-                    print(newChapter["name"])
-                    try:
-                        print(chapters[i].name)
-                    except:
-                        pass
+                newChapters = source.GetChapters(comic.url) # fetches the data for chapters from source
+                reversed = newChapters[::-1]
+                for currentChapter in chapters:
+                    currentChapter.index = -1 # changes the index of all of the current chapters to -1
+                    currentChapter.save()
+                for newChapter in newChapters:
+                    chapter.objects.create(name=newChapter["name"], url=newChapter["url"], comicId=id, index=reversed.index(newChapter)+1)
+                ## TODO: Need to go through the database, link chapters by name and transfer properties such as downloaded and so on
+                chapters = chapter.objects.all().filter(comicId=id).exclude(index=-1)
+                updated = []
+                for newChapter in chapters:
+                    filtered = chapter.objects.filter(comicId=id, name=newChapter.name).order_by('index')
+                    if len(filtered) > 1:
+                        read, lastRead, downloaded = filtered[0].read, filtered[0].lastRead, filtered[0].downloaded
+                        filtered[1].read = read 
+                        filtered[1].lastRead = lastRead
+                        filtered[1].downloaded =  downloaded
+                        filtered[1].save()
+                        filtered[0].delete()
+                    else:
+                        updated.append(filtered[0].name)
+                if len(updated) > 0:
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        f'{comic.title}',
+                        f"{','.join(updated)}",
+                        duration=4,
+                    )
+                leftToRead = len(chapter.objects.filter(comicId=id).exclude(read=True))
+                comic.leftToRead = leftToRead
+                comic.save()
                 
         nextChapter = -1
         if len(ordered) > 0:
