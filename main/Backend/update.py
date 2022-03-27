@@ -1,28 +1,36 @@
-from main.models import manga, extension, chapter
+from main.models import manga, extension, chapter, setting
 from win10toast import ToastNotifier
+import threading
 import time
 import sys
+import os
 
 def updateLibrary():
+    print("running update")
     updates = []
     library = manga.objects.all()
     for comic in library:
-        update = updateChapters(comic.id)
-        if len(update) > 0:
-            updates.append(comic.title)
-            leftToRead = len(chapter.objects.filter(comicId=comic.id).exclude(read=True))
-            comic.leftToRead = leftToRead
-            comic.save()
+        if comic.updating == False:
+            print(comic.updating)
+            update = updateChapters(comic.id)
+            if len(update) > 0:
+                updates.append(comic.title)
+                leftToRead = len(chapter.objects.filter(comicId=comic.id).exclude(read=True))
+                comic.leftToRead = leftToRead
+                comic.save()
     if len(updates) > 0:
         toast = ToastNotifier()
         toast.show_toast(
             f'New Chapters',
-            f"{','.join(updates)}",
+            f"{', '.join(updates)}",
             duration=4,
         )
+
 def updateChapters(comicId):
     comic = manga.objects.get(id=comicId)
-    chapters = chapter.objects.all().filter(comicId=comicId).exclude(index=-1)
+    comic.updating = True
+    comic.save()
+    chapters = chapter.objects.all().filter(comicId=comicId)
     ext = extension.objects.get(id=comic.source)
     sys.path.insert(0, ext.path)
     import source
@@ -48,4 +56,20 @@ def updateChapters(comicId):
             filtered[0].delete()
         else:
             updated.append(filtered[0].name)
+    comic.updating = False
+    comic.save()
     return updated
+
+def autoUpdate():
+    libraryUpdating = setting.objects.get(name="libraryUpdating")
+    if libraryUpdating.state == False:
+        libraryUpdating.state = True
+        libraryUpdating.save()
+        updateLibrary()
+        libraryUpdating.state = False
+        libraryUpdating.save()
+    time.sleep(1800)
+
+t = threading.Thread(target=autoUpdate)
+t.setDaemon = True
+t.start()

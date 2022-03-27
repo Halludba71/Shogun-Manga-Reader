@@ -28,6 +28,7 @@ class manga(models.Model):
 	NumChapters = models.IntegerField(default=0)
 	url = models.TextField(default="")
 	leftToRead = models.IntegerField()
+	updating = models.BooleanField(default=False)
 	def chapters_to_arr(self):
 		return json.loads(self.chapters)
 		
@@ -77,3 +78,10 @@ class download(models.Model):
 	chapterid = models.IntegerField()
 	totalPages = models.IntegerField(default=0)
 	downloaded = models.IntegerField(default=0)
+
+class setting(models.Model):
+	name = models.TextField()
+	state = models.BooleanField()
+
+	def __str__(self):
+		return self.name

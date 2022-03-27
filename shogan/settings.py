@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.1.12', '127.0.0.1']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -125,4 +124,5 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240

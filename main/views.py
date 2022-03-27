@@ -2,7 +2,7 @@ from hashlib import new
 from turtle import update
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from .models import manga, extension, chapter, download
+from .models import manga, extension, chapter, download, setting
 from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.download_extensions import download_extension
 from main.Backend.extensions.search_manga import search
@@ -19,7 +19,6 @@ import shutil
 # from .reader import * # This line is currently not needed
 # Create your views here.
 
-
 def redirect_view(response):
     response = redirect('/library')
     return response
@@ -29,7 +28,14 @@ def library(response):
     if response.method == "POST":
             method = response.POST["editLibrary"]
             if method == "updateLibrary":
-                updateLibrary()
+                libraryUpdating = setting.objects.get(name="libraryUpdating")
+                if libraryUpdating.state == False:
+                    libraryUpdating.state = True
+                    libraryUpdating.save()
+                    updateLibrary()
+                    libraryUpdating.state = False
+                    libraryUpdating.save()
+                    
     return render(response, "main/library.html", {'library': library})
 
 def browse(response):
@@ -69,6 +75,14 @@ def novel(response, id):
 def comic(response, id, inLibrary):
     if inLibrary == 1:
         comic = manga.objects.get(id=id)
+        if comic.updating == True:
+            toast = ToastNotifier()
+            toast.show_toast(
+                f'{comic.title} is being updated',
+                'Please wait a bit and try again later',
+                duration=3,
+            )
+            return redirect('/library/')
         chapters = chapter.objects.all().filter(comicId=id).exclude(index=-1)
         ordered = chapters.order_by('index')
         if response.method == "POST":
@@ -150,19 +164,18 @@ def comic(response, id, inLibrary):
             if method == "cancelFilter":
                 pass
             if method == "updateChapters":
-                updated = updateChapters(id)
-                if len(updated) > 0:
-                    toast = ToastNotifier()
-                    toast.show_toast(
-                        f'{comic.title}',
-                        f"{','.join(updated)}",
-                        duration=4,
-                    )
-                    leftToRead = len(chapter.objects.filter(comicId=id).exclude(read=True))
-                    comic.leftToRead = leftToRead
-                    comic.save()
-
-                
+                if comic.updating == False:
+                    updated = updateChapters(id)
+                    if len(updated) > 0:
+                        toast = ToastNotifier()
+                        toast.show_toast(
+                            f'{comic.title}',
+                            f"{','.join(updated)}",
+                            duration=4,
+                        )
+                        leftToRead = len(chapter.objects.filter(comicId=id).exclude(read=True))
+                        comic.leftToRead = leftToRead
+                      
         nextChapter = -1
         if len(ordered) > 0:
             nextChapter = ordered[0].index
@@ -200,8 +213,17 @@ def comic(response, id, inLibrary):
     return render(response, "main/comic.html", {"comic":comic, "chapters":ordered.reverse(), "nextChapter": nextChapter})
 
 def read(response, inLibrary, comicId, chapterIndex):
-    currentChapter = chapter.objects.get(comicId=comicId, index=chapterIndex)
     comic = manga.objects.get(id=comicId)
+    if comic.updating == True:
+        toast = ToastNotifier()
+        toast.show_toast(
+            f'{comic.title} is being updated',
+            'Please wait a bit and try again later',
+            duration=3,
+        )
+        return redirect('/library/')
+    
+    currentChapter = chapter.objects.get(comicId=comicId, index=chapterIndex)
     if response.method == "POST":
         data = json.loads(response.body)
         if data["value"] == "Completed":
@@ -219,6 +241,7 @@ def read(response, inLibrary, comicId, chapterIndex):
             currentChapter.save()
 
     if inLibrary == 1:
+
         if currentChapter.downloaded == True:
             path = f"{os.getcwd()}\main\static\manga\{comicId}\{chapterId}"
             unsorted_images = os.listdir(path)
@@ -228,12 +251,12 @@ def read(response, inLibrary, comicId, chapterIndex):
                     images.append(f"manga/{comicId}/{chapterId}/" + unsorted_images[unsorted_images.index(f"{str(i)}.png")])
                 if "1.jpg" in unsorted_images:
                     images.append(f"manga/{comicId}/{chapterId}/" + unsorted_images[unsorted_images.index(f"{str(i)}.jpg")])
-            print(images)
         else:
             ext = extension.objects.get(id=comic.source)
             sys.path.insert(0, ext.path)
             import source
             images = source.GetImageLinks(currentChapter.url)
+            print(images)
 
     return render(response, "main/read.html", {"comic": comic, "chapter": currentChapter, "images": images})
     # return render(response, "main/read.html", {"comic": comic, "chapter": chapter})
