@@ -89,7 +89,7 @@
         {% csrf_token %}
         <table>
             {% for category in allCategories %}
-            {% if category.name != 'default' %}
+            {% if category.name != 'All' %}
             <tr>
             <td>
             {% if category in currentCategories%}

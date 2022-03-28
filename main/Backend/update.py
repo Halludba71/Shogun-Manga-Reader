@@ -60,16 +60,17 @@ def updateChapters(comicId):
     comic.save()
     return updated
 
-# def autoUpdate():
-#     libraryUpdating = setting.objects.get(name="libraryUpdating")
-#     if libraryUpdating.state == False:
-#         libraryUpdating.state = True
-#         libraryUpdating.save()
-#         updateLibrary()
-#         libraryUpdating.state = False
-#         libraryUpdating.save()
-#     time.sleep(1800)
+def autoUpdate(frequency):
+    libraryUpdating = setting.objects.get(name="libraryUpdating")
+    if libraryUpdating.state == False:
+        libraryUpdating.state = True
+        libraryUpdating.save()
+        updateLibrary()
+        libraryUpdating.state = False
+        libraryUpdating.save()
+    time.sleep(frequency)
 
-# t = threading.Thread(target=autoUpdate)
-# t.setDaemon = True
-# t.start()
+if setting.objects.get(name="automaticUpdates").state == True:
+    t = threading.Thread(target=autoUpdate)
+    t.setDaemon = True
+    t.start()

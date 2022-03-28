@@ -1,7 +1,6 @@
 from hashlib import new
 from threading import currentThread
 from turtle import update
-from celery import current_app
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import manga, extension, chapter, download, setting, category, mangaCategory
@@ -26,7 +25,9 @@ def redirect_view(response):
     return response
 
 def library(response):
-    library = manga.objects.all
+    library = manga.objects.all().order_by("title")
+    categories = category.objects.all()
+    mangaCategories = mangaCategory.objects.all()
     if response.method == "POST":
             method = response.POST["editLibrary"]
             if method == "updateLibrary":
@@ -37,8 +38,19 @@ def library(response):
                     updateLibrary()
                     libraryUpdating.state = False
                     libraryUpdating.save()
+            if method == "filterCategories":
+                categoryIds = response.POST.getlist("checkbox")
+                filteredCategories = []
+                filteredLibrary = []
+                for categoryId in categoryIds:
+                    filteredManga = mangaCategories.filter(categoryid=categoryId)
+                    for filtered in filteredManga:
+                        filteredLibrary.append(manga.objects.get(id=filtered.mangaid))
+                library = set(filteredLibrary)
+            if method == "cancelLibraryFilter":
+                pass
                     
-    return render(response, "main/library.html", {'library': library})
+    return render(response, "main/library.html", {'library': library, 'categories': categories})
 
 def browse(response):
     results = []
@@ -184,7 +196,7 @@ def comic(response, id, inLibrary):
                 for item in currentCategories:
                     if item.id not in newCategories:
                         mangaCategoryToDelete = mangaCategory.objects.get(categoryid=item.id, mangaid=id)
-                        if mangaCategoryToDelete.categoryid != category.objects.get(name="default").id:
+                        if mangaCategoryToDelete.categoryid != category.objects.get(name="All").id:
                             mangaCategoryToDelete.delete()
                 for categoryId in newCategories:
                     if not mangaCategory.objects.all().filter(categoryid=categoryId, mangaid=id).exists():
@@ -310,5 +322,6 @@ def settings(response):
             categoryToDelete = category.objects.get(name=categoryName)
             mangaCategory.objects.all().filter(categoryid=categoryToDelete.id).delete()
             categoryToDelete.delete()
-    categories = category.objects.all().exclude(name="default")
+    categories = category.objects.all().exclude(name="All")
+    automaticUpdates = setting.objects.get(name="automaticUpdates")
     return render(response, "main/settings.html", {"categories": categories})

@@ -50,7 +50,7 @@ def GetMetadata(manga_url):
     soup = BeautifulSoup(request.text, "html.parser")
     name = re.findall(r'<h1>(.*?)</h1>', str(soup.find("h1")))[0]
     cover = re.findall(r'src="(.*?)"',str(soup.find(class_="info-image")))[0]
-    author = re.findall(r'>(.*?)</a>', str(soup.findAll(class_="table-value")[1]))[0]
+    author = ", ".join(re.findall(r'>(.*?)</a>', str(soup.find(class_="info-author").parent.parent)))
     description = soup.findAll(class_="panel-story-info-description")[0].text
     mangaInfo = {}
     mangaInfo["name"] = name
@@ -115,6 +115,7 @@ def DownloadChapter(urls, comicid, chapterId, downloadId):
     chapterToDownload.downloaded = True
     chapterToDownload.save()
     download.objects.get(id=downloadId).delete()
+    
 def imageToBase64(url):
     headers = {
         'Referer': "https://readmanganato.com/",
@@ -123,4 +124,3 @@ def imageToBase64(url):
     src = (f"data:{r.headers['Content-Type']};base64, {(base64.b64encode(r.content)).decode('UTF-8')}")
     return src
 
-# (DownloadChapter([], 12, 1032))

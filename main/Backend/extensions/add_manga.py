@@ -1,5 +1,5 @@
 import sys
-from main.models import manga, chapter
+from main.models import manga, chapter, mangaCategory, category
 import requests
 import hashlib
 import os
@@ -17,6 +17,8 @@ def newManga(ext, chapters, metaData):
         cover.write(request.content)
 
     newManga = manga.objects.create(title=metaData["name"], url=metaData["url"], cover=fileName, description=metaData["description"], source=ext.id, author=metaData["author"], orientation="vertical", NumChapters=numChapters, leftToRead=numChapters)
+    all = category.objects.get(name="All")
+    mangaCategory.objects.create(categoryid=all.id, mangaid=newManga.id)
     reversed = chapters[::-1]
     for item in chapters:
         chapter.objects.create(name=item["name"], url=item["url"], comicId=newManga.id, index=reversed.index(item)+1)

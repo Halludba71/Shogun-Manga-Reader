@@ -82,6 +82,6 @@ class download(models.Model):
 class setting(models.Model):
 	name = models.TextField()
 	state = models.BooleanField()
-
+	value = models.IntegerField(default=0)
 	def __str__(self):
 		return self.name
