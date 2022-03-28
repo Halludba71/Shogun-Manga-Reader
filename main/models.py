@@ -64,12 +64,12 @@ class chapter(models.Model):
 	def __str__(self):
 		return self.name
 	
-class categorie(models.Model):
+class category(models.Model):
 	name = models.TextField(default='', blank=True)
 	def __str__(self):
 		return self.name
 
-class mangaCategorie(models.Model):
+class mangaCategory(models.Model):
 	categoryid = models.IntegerField()
 	mangaid = models.IntegerField()
 

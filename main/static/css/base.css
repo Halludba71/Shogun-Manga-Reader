@@ -114,3 +114,13 @@ h1 {
     padding-left: 0px;
     padding-top: 15px;
 }
+
+.settings{
+    filter: invert(60%) sepia(80%) saturate(913%) hue-rotate(166deg) brightness(87%) contrast(2%);
+    padding-left: 0px;
+    padding-top: 15px;
+}
+
+.settings:hover{
+    filter: invert(64%) sepia(80%) saturate(4587%) hue-rotate(190deg) brightness(98%) contrast(92%);
+}

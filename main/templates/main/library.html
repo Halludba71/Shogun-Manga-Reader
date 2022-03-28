@@ -18,9 +18,15 @@
           <img src="{% static 'images/refresh.svg' %}" alt="">
       </button>
   </form>
+  <button class="tool" onclick="window.filterLibrary.showModal()">
+      <img src="{% static 'images/filter.svg' %}" alt="">
+  </button>
 </div>
 <link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
 
+<dialog id="filterLibrary">
+
+</dialog>
 <div class="books" id="books">
 {% for book in library %}
 

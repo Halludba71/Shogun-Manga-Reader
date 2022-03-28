@@ -1,8 +1,10 @@
 from hashlib import new
+from threading import currentThread
 from turtle import update
+from celery import current_app
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from .models import manga, extension, chapter, download, setting
+from .models import manga, extension, chapter, download, setting, category, mangaCategory
 from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.download_extensions import download_extension
 from main.Backend.extensions.search_manga import search
@@ -75,6 +77,8 @@ def novel(response, id):
 def comic(response, id, inLibrary):
     if inLibrary == 1:
         comic = manga.objects.get(id=id)
+        currentCategories = [category.objects.get(id=item.categoryid) for item in mangaCategory.objects.filter(mangaid=id)]
+        allCategories = category.objects.all()
         if comic.updating == True:
             toast = ToastNotifier()
             toast.show_toast(
@@ -175,7 +179,18 @@ def comic(response, id, inLibrary):
                         )
                         leftToRead = len(chapter.objects.filter(comicId=id).exclude(read=True))
                         comic.leftToRead = leftToRead
-                      
+            if method == "editCategories":
+                newCategories = response.POST.getlist("checkbox")
+                for item in currentCategories:
+                    if item.id not in newCategories:
+                        mangaCategoryToDelete = mangaCategory.objects.get(categoryid=item.id, mangaid=id)
+                        if mangaCategoryToDelete.categoryid != category.objects.get(name="default").id:
+                            mangaCategoryToDelete.delete()
+                for categoryId in newCategories:
+                    if not mangaCategory.objects.all().filter(categoryid=categoryId, mangaid=id).exists():
+                        mangaCategory.objects.create(categoryid=categoryId, mangaid=id)
+                currentCategories = [category.objects.get(id=item.categoryid) for item in mangaCategory.objects.filter(mangaid=id)]
+
         nextChapter = -1
         if len(ordered) > 0:
             nextChapter = ordered[0].index
@@ -192,6 +207,7 @@ def comic(response, id, inLibrary):
             else:
                 nextChapter = chapter.objects.get(index=nextChapter, comicId=comic.id).index
             print(nextChapter)
+
     elif inLibrary == 0:
         mangaInfo = response.session.get('mangaInfo').split(',')
         ext = extension.objects.get(name=mangaInfo[0])
@@ -210,7 +226,7 @@ def comic(response, id, inLibrary):
         response.session['metaData'] = comic
         return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
 
-    return render(response, "main/comic.html", {"comic":comic, "chapters":ordered.reverse(), "nextChapter": nextChapter})
+    return render(response, "main/comic.html", {"comic":comic, "chapters":ordered.reverse(), "nextChapter": nextChapter, "allCategories": allCategories, "currentCategories":currentCategories})
 
 def read(response, inLibrary, comicId, chapterIndex):
     comic = manga.objects.get(id=comicId)
@@ -274,4 +290,25 @@ def bypass(response, imageUrl):
     imageData = (requests.get(imageUrl, headers=headers)).content
     # print(imageData)
     return HttpResponse(imageData, content_type="image/png")
-    # return HttpResponse("hello")
+
+def settings(response):
+    if response.method == "POST":
+        method = response.POST["editSetting"]
+        if method == "newCategory":
+            categoryName = response.POST["categoryName"]
+            if category.objects.all().filter(name=categoryName).exists():
+                toast = ToastNotifier()
+                toast.show_toast(
+                    f'Category already exists!',
+                    'Category names must be unique',
+                duration=3,
+                )
+            else:
+                category.objects.create(name=categoryName)
+        if method == "deleteCategory":
+            categoryName = response.POST["categoryName"]
+            categoryToDelete = category.objects.get(name=categoryName)
+            mangaCategory.objects.all().filter(categoryid=categoryToDelete.id).delete()
+            categoryToDelete.delete()
+    categories = category.objects.all().exclude(name="default")
+    return render(response, "main/settings.html", {"categories": categories})

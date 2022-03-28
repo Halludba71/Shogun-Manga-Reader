@@ -1,0 +1,51 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block extra_head_content %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/settings.css' %}">
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h2>Settings</h2>
+
+<div class="settings-list">
+    <h3>Categories</h3>
+    {% if categories|length == 0 %}
+    <p>You have no categories. Try make one now</p>
+    {% else %}
+    <table>
+        {% for category in categories %}
+            <tr>
+                <td>
+                    {{ category }}
+                </td>
+                <td class="delete-category">
+                    <form action="/settings/" method="post">
+                        {% csrf_token %}
+                        <button type="submit" name="editSetting" value="deleteCategory" class="cancel-button">
+                            Remove Category
+                        </button>
+                        <input type="hidden" name="categoryName" value="{{ category }}">
+                    </form>
+                </td>
+            </tr>
+
+        {% endfor %}
+    </table>
+    {% endif %}
+    <button class="submit-button" onclick="window.createCategory.show()">
+        Add Category
+    </button>
+</div>
+
+<dialog class="createCategory" id="createCategory">
+    <form action="/settings/" method="post">
+    <input type="text" maxlength="15" id="categoryName" name="categoryName" class="categoryName" placeholder="Category Name ...">
+    {% csrf_token %}
+    <button type="submit" name="editSetting" value="newCategory" class="submit-button">Ok</button>
+    <button type="button" class="cancel-button" onclick="window.createCategory.close()">Cancel</button>
+    </form>
+</dialog>
+{% endblock %}
