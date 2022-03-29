@@ -7,12 +7,12 @@ If False, then values from the database will not be updated.
 
 import urllib.request
 
-def connected(host='http://google.com'):
+def connected():
+    host='http://google.com'
     try:
-        urllib.request.urlopen(host) #Python 3.x
+        urllib.request.urlopen(host)
         return True
     except:
         return False
 
 # test
-# print(connect())

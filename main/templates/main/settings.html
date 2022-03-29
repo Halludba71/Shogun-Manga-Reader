@@ -42,15 +42,56 @@
 
 <div class="settings-list">
     <h3>Updates</h3>
-
+        <h4>Automatic Updates</h4>
+    {% if automaticUpdates.state == False %}
+        <ul>Never</ul>
+    {% else %}
+        <ul>
+        {% if automaticUpdates.value == 1800 %}
+            Every 30 Minutes
+        {% elif automaticUpdates.value == 3600 %}
+            Every 1 Hour
+        {% elif automaticUpdates.value == 7200 %}
+            Every 2 Hours
+        {% elif automaticUpdates.value == 18000%}
+            Every 5 Hours
+        {% endif %}
+        </ul>
+    {% endif %}
+    <button class="submit-button" onclick="window.editUpdateSettings.show()">
+        Edit Update Settings
+    </button>
 </div>
 
-<dialog class="createCategory" id="createCategory">
+<dialog class="dialog" id="createCategory">
     <form action="/settings/" method="post">
     <input type="text" maxlength="15" id="categoryName" name="categoryName" class="categoryName" placeholder="Category Name ...">
     {% csrf_token %}
     <button type="submit" name="editSetting" value="newCategory" class="submit-button">Ok</button>
     <button type="button" class="cancel-button" onclick="window.createCategory.close()">Cancel</button>
+    </form>
+</dialog>
+
+<dialog class="dialog" id="editUpdateSettings">
+    <form action="/settings/" method="post">
+        {% csrf_token %}
+        <label for="automaticUpdates">Automatic Updates: </label>
+        <select name="automaticUpdates" id="automaticUpdates">
+            <option value="False">No</option>
+            <option value="True">Yes</option>
+        </select>
+        <br>
+        <br>
+        <label for="updateFrequency">Update Frequency: </label>
+        <select name="updateFrequency" id="updateFrequency">
+            <option value="1800">Every 30 Minutes</option>
+            <option value="3600">Every Hour</option>
+            <option value="7200">Every 2 Hours</option>
+            <option value="18000">Every 5 Hours</option>
+        </select>
+        <br>
+        <button type="submit" name="editSetting" value="editUpdate" class="submit-button">Submit</button>
+        <button type="button" class="cancel-button" onclick="window.editUpdateSettings.close()">Cancel</button>
     </form>
 </dialog>
 {% endblock %}

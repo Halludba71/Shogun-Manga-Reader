@@ -304,6 +304,7 @@ def bypass(response, imageUrl):
     return HttpResponse(imageData, content_type="image/png")
 
 def settings(response):
+    automaticUpdates = setting.objects.get(name="automaticUpdates")
     if response.method == "POST":
         method = response.POST["editSetting"]
         if method == "newCategory":
@@ -322,6 +323,21 @@ def settings(response):
             categoryToDelete = category.objects.get(name=categoryName)
             mangaCategory.objects.all().filter(categoryid=categoryToDelete.id).delete()
             categoryToDelete.delete()
+        if method == "editUpdate":
+            automaticUpdatesAllowed = response.POST["automaticUpdates"]
+            if automaticUpdatesAllowed == "True":
+                updateFrequency = response.POST["updateFrequency"]
+                automaticUpdates.state = True
+                automaticUpdates.value = int(updateFrequency)
+                automaticUpdates.save()
+            else:
+                automaticUpdates.state = False
+                automaticUpdates.save()
+            toast = ToastNotifier()
+            toast.show_toast(
+                f'Update Settings were changed',
+                'Please restart app for changes to take place',
+            duration=3,
+            )
     categories = category.objects.all().exclude(name="All")
-    automaticUpdates = setting.objects.get(name="automaticUpdates")
-    return render(response, "main/settings.html", {"categories": categories})
+    return render(response, "main/settings.html", {"categories": categories, "automaticUpdates": automaticUpdates})
