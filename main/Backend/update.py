@@ -7,8 +7,9 @@ import sys
 import os
 
 def updateLibrary():
-    updates = []
     if connected():
+        print("update working")
+        updates = []
         library = manga.objects.all()
         for comic in library:
             if comic.updating == False:
@@ -37,6 +38,14 @@ def updateLibrary():
 def updateChapters(comicId):
     if connected():
         comic = manga.objects.get(id=comicId)
+        if comic.editing == True:
+            toast = ToastNotifier()
+            toast.show_toast(
+                f'Update for {comic.title} skipped',
+                "Manga is currently being edited",
+                duration=4,
+            )
+            return []
         comic.updating = True
         comic.save()
         chapters = chapter.objects.all().filter(comicId=comicId)
@@ -58,6 +67,10 @@ def updateChapters(comicId):
             filtered = chapter.objects.filter(comicId=comicId, name=newChapter.name).order_by('index')
             if len(filtered) > 1:
                 read, lastRead, downloaded = filtered[0].read, filtered[0].lastRead, filtered[0].downloaded
+                if downloaded == True:
+                    path = f"{os.getcwd()}\main\static\manga\{comicId}\{filtered[0].id}"
+                    newPath = f"{os.getcwd()}\main\static\manga\{comicId}\{filtered[1].id}"
+                    os.rename(path, newPath)
                 filtered[1].read = read 
                 filtered[1].lastRead = lastRead
                 filtered[1].downloaded =  downloaded
@@ -75,6 +88,7 @@ def updateChapters(comicId):
             "Make sure you are connected to the internet or try again",
             duration=4,
         )
+        return -1
 
 def autoUpdate(frequency):
     libraryUpdating = setting.objects.get(name="libraryUpdating")
@@ -96,12 +110,12 @@ def updateOnStart():
         libraryUpdating.state = False
         libraryUpdating.save()
 
-if setting.objects.get(name="automaticUpdates").state == True:
-    t = threading.Thread(target=autoUpdate, args=(setting.objects.get(name="automaticUpdates").value, ))
-    t.setDaemon = True
-    t.start()
+# if setting.objects.get(name="automaticUpdates").state == True:
+#     t = threading.Thread(target=autoUpdate, args=(setting.objects.get(name="automaticUpdates").value, ))
+#     t.setDaemon = True
+#     t.start()
 
-else:
-    t = threading.Thread(target=updateOnStart)
-    t.setDaemon = True
-    t.start()
+# else:
+#     t = threading.Thread(target=updateOnStart)
+#     t.setDaemon = True
+#     t.start()

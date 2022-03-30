@@ -16,7 +16,7 @@
     <h3>By {{comic.author}}</h3>
     <form action="/comic/0/0" method="post">
         {% csrf_token %}
-        <button class="addToLibrary">
+        <button class="addToLibrary" onclick="this.form.submit(); this.disabled=true; this.value='Adding to library...';">
             Add To library
         </button>
     </form>
@@ -30,12 +30,6 @@
 <div class="manga-chapters">
     <div class="top-row">
         <h2>Chapters</h2>
-        <div class="tooltip">
-            <span class="tooltipText">Filter chapters</span>
-            <button class="tool">
-                <img src="{% static 'images/filter.svg' %}" alt="">
-            </button>
-        </div>
     </div>
         
     <div class="toolContainer">

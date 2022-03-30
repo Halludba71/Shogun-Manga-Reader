@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 import json
 # Create your models here.
@@ -29,6 +30,7 @@ class manga(models.Model):
 	url = models.TextField(default="")
 	leftToRead = models.IntegerField()
 	updating = models.BooleanField(default=False)
+	editing = models.BooleanField(default=False)
 	def chapters_to_arr(self):
 		return json.loads(self.chapters)
 		
@@ -39,16 +41,7 @@ class extension(models.Model):
 	name = models.TextField(default="")
 	path = models.TextField(default="")
 	logo = models.TextField(default="")
-
-	def __str__(self):
-		return self.name
-		
-"""
-The below items aren't needed for now
-"""
-class sources(models.Model):
-	name = models.TextField(default='', blank=True)
-
+	url = models.TextField(default="")
 	def __str__(self):
 		return self.name
 
