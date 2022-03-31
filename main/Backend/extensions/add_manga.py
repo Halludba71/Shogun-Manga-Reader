@@ -1,5 +1,6 @@
 import sys
 from main.models import manga, chapter, mangaCategory, category
+from main.Backend.IfOnline import connected
 import requests
 import hashlib
 import os
@@ -10,12 +11,17 @@ def newManga(ext, chapters, metaData):
     print(metaData["url"])
     numChapters = len(chapters)
     ## TODO: download Image
-    request = requests.get(metaData["cover"])
-    fileName = "covers/" + hashlib.md5(request.content).hexdigest() + metaData["cover"][ len(metaData["cover"]) -4::]
-    path = f"{os.getcwd()}/main/static/"
-    with open(path+fileName, "wb") as cover:
-        cover.write(request.content)
-
+    if connected() == True:
+        try:
+            request = requests.get(metaData["cover"])
+            fileName = "covers/" + hashlib.md5(request.content).hexdigest() + metaData["cover"][ len(metaData["cover"]) -4::]
+            path = f"{os.getcwd()}/main/static/"
+            with open(path+fileName, "wb") as cover:
+                cover.write(request.content)
+        except:
+            return -1
+    else:
+        return -1
     newManga = manga.objects.create(title=metaData["name"], url=metaData["url"], cover=fileName, description=metaData["description"], source=ext.id, author=metaData["author"], orientation="vertical", NumChapters=numChapters, leftToRead=numChapters)
     all = category.objects.get(name="All")
     mangaCategory.objects.create(categoryid=all.id, mangaid=newManga.id)

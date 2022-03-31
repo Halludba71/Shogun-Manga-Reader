@@ -12,5 +12,6 @@ urlpatterns = [
     path("read/<int:inLibrary>/<int:comicId>/<int:chapterIndex>", views.read, name="read"), #
     path("bypass/<int:extensionId>/<path:imageUrl>", views.bypass, name="bypass"),
     path("downloads/", views.downloads, name="downloads"),
+    path("downloads/progress/", views.downloadProgress, name="downloadProgress"),
     path("settings/", views.settings, name="settings")
 ]

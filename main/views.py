@@ -5,10 +5,11 @@ from main.Backend.update import updateChapters, updateLibrary
 from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.search_manga import search
 from main.Backend.extensions.add_manga import newManga
+from main.Backend.IfOnline import connected
 from django.shortcuts import render, redirect
 from win10toast import ToastNotifier
 from threading import currentThread
-from turtle import update
+from turtle import down, update
 from hashlib import new
 import requests
 import shutil
@@ -62,10 +63,11 @@ def browse(response):
             results = search(SearchQuery)
             for k,v in results.items():
                 ext = extension.objects.get(name=k)
-                for k2, v2 in v.items():
-                    if manga.objects.all().filter(title=k2, source=ext.id).exists():
-                        mangaInLibrary = manga.objects.get(title=k2, source=ext.id)
-                        results[k][k2] = [mangaInLibrary.id, mangaInLibrary.cover, True]
+                if len(v) > 0:
+                    for k2, v2 in v.items():
+                        if manga.objects.all().filter(title=k2, source=ext.id).exists():
+                            mangaInLibrary = manga.objects.get(title=k2, source=ext.id)
+                            results[k][k2] = [mangaInLibrary.id, mangaInLibrary.cover, True]
 
     if response.method == "POST":
         # print(response.POST['mangaInfo'])
@@ -93,13 +95,16 @@ def comic(response, id, inLibrary):
         currentCategories = [category.objects.get(id=item.categoryid) for item in mangaCategory.objects.filter(mangaid=id)]
         allCategories = category.objects.all()
         if comic.updating == True:
-            toast = ToastNotifier()
-            toast.show_toast(
-                f'{comic.title} is being updated',
-                'Please wait a bit and try again later',
-                duration=3,
-            )
-            return redirect('/library/')
+            try:
+                toast = ToastNotifier()
+                toast.show_toast(
+                    f'{comic.title} is being updated',
+                    'Please wait a bit and try again later',
+                    duration=3,
+                )
+                return redirect('/library/')
+            except:
+                return redirect('/library/') #Notification will not work if there is already an existing notification
         chapters = chapter.objects.all().filter(comicId=id).exclude(index=-1)
         ordered = chapters.order_by('index')
         if response.method == "POST":
@@ -137,52 +142,62 @@ def comic(response, id, inLibrary):
                 comic.delete()
                 return redirect("/library/")
             if method == "downloadSelected":
-                ext = extension.objects.get(id=comic.source)
-                sys.path.insert(0, ext.path)
-                import source
-                selectedChapters = response.POST.getlist("checkbox")
-                for chapterId in selectedChapters:
-                    selectedChapter  = chapter.objects.get(id=chapterId)
-                    if selectedChapter.downloaded == False:
-                        download.objects.create(name=selectedChapter.name, chapterid=selectedChapter.id)
-                    if selectedChapter.downloaded == True:
-                        selectedChapters.remove(chapterId)
-                toast = ToastNotifier()
-                toast.show_toast(
-                    f'{len(selectedChapters)} Chapter(s) Are Being Downloaded',
-                    'Check progress in the downloads page.',
-                    duration=3,
-                )
-                for chapterId in selectedChapters:
-                    if selectedChapter.downloaded == False:
-                        selectedChapter = chapter.objects.get(id=chapterId)
-                        chapterDownloading = download.objects.get(chapterid=selectedChapter.id)
-                        images = source.GetImageLinksNoProxy(selectedChapter.url)
-                        if len(images) == 0:
-                            toast = ToastNotifier()
-                            toast.show_toast(
-                                f'Download Failed',
-                                'Check your internet connection or try again',
-                                duration=3,
-                            )
-                            chapterDownloading.delete()
-                        else:
-                            chapterDownloading.totalPages = len(images)
-                            chapterDownloading.save()
-                            downloadFailed = source.DownloadChapter(images, comic.id, selectedChapter.id, chapterDownloading.id)
-                            if downloadFailed == True:
+                if connected() == True:
+                    ext = extension.objects.get(id=comic.source)
+                    sys.path.insert(0, ext.path)
+                    import source
+                    selectedChapters = response.POST.getlist("checkbox")
+                    for chapterId in selectedChapters:
+                        selectedChapter  = chapter.objects.get(id=chapterId)
+                        if selectedChapter.downloaded == False:
+                            download.objects.create(name=selectedChapter.name, chapterid=selectedChapter.id)
+                        if selectedChapter.downloaded == True:
+                            selectedChapters.remove(chapterId)
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        f'{len(selectedChapters)} Chapter(s) Are Being Downloaded',
+                        'Check progress in the downloads page\nDo not close the program',
+                        duration=3,
+                    )
+                    failedDownloads = 0
+                    for chapterId in selectedChapters:
+                        if selectedChapter.downloaded == False:
+                            selectedChapter = chapter.objects.get(id=chapterId)
+                            chapterDownloading = download.objects.get(chapterid=selectedChapter.id)
+                            images = source.GetImageLinksNoProxy(selectedChapter.url)
+                            if len(images) == 0:
                                 toast = ToastNotifier()
                                 toast.show_toast(
                                     f'Download Failed',
                                     'Check your internet connection or try again',
                                     duration=3,
                                 )
-                                path = f"{os.getcwd()}\main\static\manga\{id}\{chapterId}"
-                                if os.path.exists(path):
-                                    shutil.rmtree(path)
-                                selectedChapter.downloaded = False
-                                selectedChapter.save()
-                                
+                                chapterDownloading.delete()
+                            else:
+                                chapterDownloading.totalPages = len(images)
+                                chapterDownloading.save()
+                                downloadFailed = source.DownloadChapter(images, comic.id, selectedChapter.id, chapterDownloading.id)
+                                if downloadFailed == True:
+                                    failedDownloads += 1
+                                    path = f"{os.getcwd()}\main\static\manga\{id}\{chapterId}"
+                                    if os.path.exists(path):
+                                        shutil.rmtree(path)
+                                    selectedChapter.downloaded = False
+                                    selectedChapter.save()
+                    if downloadFailed > 0:
+                        toast = ToastNotifier()
+                        toast.show_toast(
+                            f'Download Failed for {downloadFailed} Chapter(s)',
+                            'Check your internet connection or try again',
+                            duration=3,
+                        )
+                else:
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        f'Download(s) Failed',
+                        'Check your internet connection or try again',
+                        duration=3,
+                    )              
             if method == "deleteDownloaded":
                 selectedChapters = response.POST.getlist("checkbox")
                 for chapterId in selectedChapters:
@@ -251,19 +266,35 @@ def comic(response, id, inLibrary):
         if response.method == "POST":
             # newItem = manga.objects.create(name="")
             mangaId = newManga(ext, response.session.get("chapters"), response.session.get("metaData"))
+            if mangaId == -1:
+                toast = ToastNotifier()
+                toast.show_toast(
+                    f'Failed to add manga to library',
+                    'Check your internet connection or try again',
+                    duration=3,
+                )
+                return redirect('/library/')
             return redirect(f'/comic/1/{mangaId}')
         sys.path.insert(0, ext.path)
         import source
         comic = source.GetMetadata(mangaInfo[1])
         
         chapters = source.GetChapters(mangaInfo[1])
+        if (chapters == -1) or (comic == -1):
+            toast = ToastNotifier()
+            toast.show_toast(
+                f'Failed to view Manga',
+                'Check your internet connection or try again',
+                duration=3,
+            )
+            return redirect('/library/')
         # print(mangaInfo[1])
         # print(chapters)
         response.session['chapters'] = chapters
         response.session['metaData'] = comic
         return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
 
-    return render(response, "main/comic.html", {"comic":comic, "chapters":ordered.reverse(), "nextChapter": nextChapter, "allCategories": allCategories, "currentCategories":currentCategories})
+    return render(response, "main/comic.html", {"comic":comic, "chapters":chapters, "nextChapter": nextChapter, "allCategories": allCategories, "currentCategories":currentCategories})
 
 def read(response, inLibrary, comicId, chapterIndex):
     comic = manga.objects.get(id=comicId)
@@ -297,26 +328,32 @@ def read(response, inLibrary, comicId, chapterIndex):
         if currentChapter.downloaded == True:
             path = f"{os.getcwd()}\main\static\manga\{comicId}\{currentChapter.id}"
             if os.path.exists(path) == False:
-                toast = ToastNotifier()
-                toast.show_toast(
-                    'Downloaded Chapters are missing from directory',
-                    f"Redownload chapter if you wish",
-                    duration=4,
-                )
-                currentChapter.downloaded = False
-                currentChapter.save()
-                return redirect(f"/comic/1/{comicId}/")
+                try:
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        'Downloaded Chapters are missing from directory',
+                        f"Remove chapter from downloaded if you wish to read",
+                        duration=4,
+                    )
+                    currentChapter.downloaded = False
+                    currentChapter.save()
+                    return redirect(f"/comic/1/{comicId}/")
+                except:
+                    return redirect(f"/comic/1/{comicId}/") #Toast notification will break if there is an existing notification that has been sent
             unsorted_images = os.listdir(path)
             if len(unsorted_images) == 0:
-                toast = ToastNotifier()
-                toast.show_toast(
-                    'Downloaded Chapters are missing from directory',
-                    f"Redownload chapter if you wish",
-                    duration=4,
-                )
-                currentChapter.downloaded = False
-                currentChapter.save()
-                return redirect(f"/comic/1/{comicId}")
+                try:
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        'Downloaded Chapters are missing from directory',
+                        f"Remove chapter from downloaded if you wish to read",
+                        duration=4,
+                    )
+                    currentChapter.downloaded = False
+                    currentChapter.save()
+                    return redirect(f"/comic/1/{comicId}")
+                except:
+                    return redirect(f"/comic/1/{comicId}")
             images = []
             pagesMissing = False
             for i in range(1, len(unsorted_images)+1):
@@ -337,19 +374,46 @@ def read(response, inLibrary, comicId, chapterIndex):
                     duration=4,
                 )
         else:
-            ext = extension.objects.get(id=comic.source)
-            sys.path.insert(0, ext.path)
-            import source
-            images = source.GetImageLinks(currentChapter.url)
-            print(images)
+            if connected() == True:
+                ext = extension.objects.get(id=comic.source)
+                sys.path.insert(0, ext.path)
+                import source
+                images = source.GetImageLinks(currentChapter.url)
+                if len(images) == 0:
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        'Failed to retrieve chapter images',
+                        f"Check Your internet connection",
+                        duration=4,
+                    )
+                    return redirect(f"/comic/1/{comicId}")
+            else:
+                try:
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        'Failed to retrieve chapter images',
+                        f"Check Your internet connection",
+                        duration=4,
+                    )
+                    return redirect(f"/comic/1/{comicId}")
+                except:
+                    return redirect(f"/comic/1/{comicId}") #Notification will fail if there is an existing notification
 
     return render(response, "main/read.html", {"comic": comic, "chapter": currentChapter, "images": images})
     # return render(response, "main/read.html", {"comic": comic, "chapter": chapter})
 
 def downloads(response):
     currentDownloads = download.objects.all()
-
+    if response.method == "POST":
+        downloadId = response.POST["cancelDownload"]
+        if download.objects.all().filter(id=downloadId).exists():
+            download.objects.get(id=downloadId).delete()
     return render(response, "main/downloads.html", {"downloads": currentDownloads})
+
+def downloadProgress(response):
+    currentDownloads = download.objects.all()
+    print(currentDownloads[0].downloaded)
+    return JsonResponse({"downloads":currentDownloads[0]}, status = 200)
 
 def bypass(response, extensionId, imageUrl):
     sourceUrl = extension.objects.get(id=extensionId).url

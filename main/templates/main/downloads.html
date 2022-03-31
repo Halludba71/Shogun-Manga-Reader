@@ -19,12 +19,23 @@
     </tr>
     {% else %}
     {% for download in downloads %}
-    <tr>
+    <tr id="">
         <td>
             <p>{{download.name}}</p>
         </td>
         <td>
             <p>{{download.downloaded}}/{{download.totalPages}}</p>
+        </td>
+        <td>
+            <div class="tooltip">
+                <span class="tooltipText">Cancel Download</span>
+                <form action="/downloads/" method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="cancelDownload" value="{{download.id}}" class="tool">
+                        <img src="{% static 'images/close-button.svg' %}" width="20" height="20" alt="">
+                    </button>
+                </form>
+            </div>
         </td>
     </tr>
     {% endfor %}
@@ -36,8 +47,17 @@
     {% else %}
     var downloading = true
     {% endif %}
-    if(downloading == true){
+    {% comment %} if(downloading == true){
         setTimeout(window.location.reload(), 1600);
-    }
+    } {% endcomment %}
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+        console.log(JSON.parse(this.responseText));
+        }
+    };
+    xhttp.open("GET", "progress/", true);
+    xhttp.send();
 </script>
 {% endblock%}

@@ -8,7 +8,12 @@ import os
 
 def updateLibrary():
     if connected():
-        print("update working")
+        toast = ToastNotifier()
+        toast.show_toast(
+            'Update is taking place',
+            "Closing the app prematurely will cause manga to be deleted",
+            duration=4,
+        )
         updates = []
         library = manga.objects.all()
         for comic in library:
