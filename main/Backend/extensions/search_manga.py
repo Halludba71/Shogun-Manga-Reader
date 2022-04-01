@@ -1,4 +1,3 @@
-from main.Backend.extensions.Manganato.source import SearchManga
 from main.models import extension
 from win10toast import ToastNotifier
 import os

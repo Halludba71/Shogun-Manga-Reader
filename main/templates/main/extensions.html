@@ -12,30 +12,41 @@
 <h2>Extensions</h2>
 <div class="extension_list">
     <h3>Installed:</h3>
-    {% for extension in installed %}
+    {% if installed|length == 0 %}
+    <p>You have no extensions installed</p>
+    {% else %}
+        {% for extension in installed %}
         <div class="row">
             <div class="extension">
-                <img src="{{ extension.logo }}" width="35" height="35" alt="">
+                <img src="{% static extension.logo %}" width="35" height="35" alt="">
                 <p>{{ extension }}</p>
             </div>
         </div>
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
     <br>
     <h3>All:</h3>
-    {% for extension in all %}
+    {% if all == -1 %}
+        <p>Failed to retrieve extensions, check your internet connection.</p>
+    {% else %}
+        {% for extension in all %}
         <div class="row">
             <div class="extension">
                 <img src="{{ extension.logo }}" alt="logo" width="35" height="35">  
                 <p>{{ extension.Name }}</p> 
             </div>
-            
+            {% if extension.downloaded == False %}
             <form action="/extensions/" method="post" class="install-button">
-            {% csrf_token %}
-            <button name="extension" value="{{ extension }}" class="install-button">
-            <span>Install</span>
-            </button>
-            </form> 
+                {% csrf_token %}
+                <button name="extension" value="{{ extension }}" class="install-button">
+                    <span>Install</span>
+                </button>
+            </form>
+            {% else %}
+            <p class="installed">Installed</p> 
+            {% endif %}
         </div>
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
 </div>
 {% endblock  %}

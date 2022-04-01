@@ -27,17 +27,19 @@
 .install-button{
     margin-left: auto;
     display: inline-flex;
-    height: 20px;
-    padding: 0;
-    border: none;
-    outline: none;
-    border-radius: 5px;
-    font-size: 16px;
-    color:#748899;
-    font-weight: 600;
-    background-color: #141418;
+    background-color: #2d89e3;
+    border: 3px solid #2d89e3;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+    color: black;
 }
 
 .install-button:hover{
-    color: #0a84ec;
+    background-color: #519fd3;
+    border: 3px solid #519fd3;
+}
+
+.installed{
+    margin-left: auto;
 }

@@ -10,7 +10,9 @@
 
 {% block content %}
 <h2>Browse</h2>
-
+{% if extensions|length == 0 %}
+<p>You have no extensions installed. Go to Extensions to install them.</p>
+{% else %}
 <form action="." method="get">
     <input type="text" id="search_box" name="search_box" placeholder="Search Manga..." required=True class="search_box">
 
@@ -43,4 +45,5 @@
         </div>
 {% endfor %}
 
+{% endif %}
 {% endblock  %}

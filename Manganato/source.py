@@ -154,3 +154,4 @@ def DownloadChapter(urls, comicid, chapterId, downloadId):
     chapterToDownload.save()
     download.objects.get(id=downloadId).delete()
     return False
+

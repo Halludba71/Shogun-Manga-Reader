@@ -9,6 +9,11 @@
 
 {% block content %}
 <h2>Library</h2>
+{% if library|length == 0 %}
+<p>You have no Manga in your library, go to browse to add them</p>
+{% else %}
+
+
 <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search Library...">
 <div class="refresh-tooltip" id="refresh-button">
   <span class="refresh-tooltipText">Update Library</span>
@@ -67,10 +72,11 @@
       </a>
     	<div class="book-name" id="book-name">{{ book }}</div>
     	</div>
-    {% endif %}
-
-{% endfor %}
-</div>
+      {% endif %}
+      
+      {% endfor %}
+    </div>
+{% endif %}
 <script>
   function SearchChapters(){     
     var input = document.getElementById("search_box")

@@ -70,7 +70,6 @@ def browse(response):
                             results[k][k2] = [mangaInLibrary.id, mangaInLibrary.cover, True]
 
     if response.method == "POST":
-        # print(response.POST['mangaInfo'])
         response.session['mangaInfo'] = response.POST['mangaInfo']
         return redirect('/comic/0/0')
     return render(response, "main/browse.html", {"results": results, "extensions": extensions})
@@ -79,8 +78,21 @@ def browse(response):
 def extensions(response):
     if response.method == "POST":
         extension_data = response.POST['extension']
-        download_extension(ast.literal_eval(extension_data))
+        downloadFailed = download_extension(ast.literal_eval(extension_data))
+        if downloadFailed == True:
+            toast = ToastNotifier()
+            toast.show_toast(
+                f'Extension download failed',
+                'Check your internet connection and try again',
+                duration=3,
+            )
+    
     all_extensions = ext_list()
+    for otherExtension in all_extensions:
+        if extension.objects.all().filter(name=otherExtension["Name"]).exists():
+            otherExtension["downloaded"] = True
+        else:
+            otherExtension["downloaded"] = False
     installed_extensions = extension.objects.all()
     return render(response, "main/extensions.html", {'installed': installed_extensions, 'all': all_extensions})
 
@@ -393,11 +405,11 @@ def read(response, inLibrary, comicId, chapterIndex):
                 except:
                     return redirect(f"/comic/1/{comicId}") #Notification will fail if there is an existing notification
 
-    return render(response, "main/read.html", {"comic": comic, "chapter": currentChapter, "images": images})
+        return render(response, "main/read.html", {"comic": comic, "chapter": currentChapter, "images": images})
     # return render(response, "main/read.html", {"comic": comic, "chapter": chapter})
 
 def downloads(response):
-    currentDownloads = download.objects.all()
+    currentDownloads = download.objects.all().order_by('-id')
     if response.method == "POST":
         data = json.loads(response.body)
         if data["value"] == "cancelDownload":
@@ -407,7 +419,7 @@ def downloads(response):
     return render(response, "main/downloads.html", {"downloads": currentDownloads})
 
 def downloadProgress(response):
-    currentDownloads = download.objects.all().values()
+    currentDownloads = download.objects.all().order_by('-id').values()
     return JsonResponse({"downloads":list(currentDownloads)})
 
 def bypass(response, extensionId, imageUrl):
