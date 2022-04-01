@@ -71,6 +71,7 @@ class download(models.Model):
 	chapterid = models.IntegerField()
 	totalPages = models.IntegerField(default=0)
 	downloaded = models.IntegerField(default=0)
+	mangaName = models.TextField(default="")
 
 class setting(models.Model):
 	name = models.TextField()

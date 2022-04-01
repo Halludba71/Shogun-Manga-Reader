@@ -150,7 +150,7 @@ def comic(response, id, inLibrary):
                     for chapterId in selectedChapters:
                         selectedChapter  = chapter.objects.get(id=chapterId)
                         if selectedChapter.downloaded == False:
-                            download.objects.create(name=selectedChapter.name, chapterid=selectedChapter.id)
+                            download.objects.create(name=selectedChapter.name, chapterid=selectedChapter.id, mangaName=comic.title)
                         if selectedChapter.downloaded == True:
                             selectedChapters.remove(chapterId)
                     toast = ToastNotifier()
@@ -166,12 +166,7 @@ def comic(response, id, inLibrary):
                             chapterDownloading = download.objects.get(chapterid=selectedChapter.id)
                             images = source.GetImageLinksNoProxy(selectedChapter.url)
                             if len(images) == 0:
-                                toast = ToastNotifier()
-                                toast.show_toast(
-                                    f'Download Failed',
-                                    'Check your internet connection or try again',
-                                    duration=3,
-                                )
+                                failedDownloads += 1
                                 chapterDownloading.delete()
                             else:
                                 chapterDownloading.totalPages = len(images)
@@ -184,10 +179,10 @@ def comic(response, id, inLibrary):
                                         shutil.rmtree(path)
                                     selectedChapter.downloaded = False
                                     selectedChapter.save()
-                    if downloadFailed > 0:
+                    if failedDownloads > 0:
                         toast = ToastNotifier()
                         toast.show_toast(
-                            f'Download Failed for {downloadFailed} Chapter(s)',
+                            f'Download Failed for {failedDownloads} Chapter(s)',
                             'Check your internet connection or try again',
                             duration=3,
                         )
@@ -306,7 +301,6 @@ def read(response, inLibrary, comicId, chapterIndex):
             duration=3,
         )
         return redirect('/library/')
-    print(chapterIndex)
     currentChapter = chapter.objects.get(comicId=comic.id, index=chapterIndex)
     if response.method == "POST":
         data = json.loads(response.body)
@@ -324,7 +318,7 @@ def read(response, inLibrary, comicId, chapterIndex):
             currentChapter.lastRead = data['lastRead']
             currentChapter.save()
 
-    if inLibrary == 1:
+    else:
         if currentChapter.downloaded == True:
             path = f"{os.getcwd()}\main\static\manga\{comicId}\{currentChapter.id}"
             if os.path.exists(path) == False:
@@ -332,7 +326,7 @@ def read(response, inLibrary, comicId, chapterIndex):
                     toast = ToastNotifier()
                     toast.show_toast(
                         'Downloaded Chapters are missing from directory',
-                        f"Remove chapter from downloaded if you wish to read",
+                        f"Redownload chapter if you wish to read offline",
                         duration=4,
                     )
                     currentChapter.downloaded = False
@@ -346,7 +340,7 @@ def read(response, inLibrary, comicId, chapterIndex):
                     toast = ToastNotifier()
                     toast.show_toast(
                         'Downloaded Chapters are missing from directory',
-                        f"Remove chapter from downloaded if you wish to read",
+                        f"Redownload chapter if you wish to read offline",
                         duration=4,
                     )
                     currentChapter.downloaded = False
@@ -405,15 +399,16 @@ def read(response, inLibrary, comicId, chapterIndex):
 def downloads(response):
     currentDownloads = download.objects.all()
     if response.method == "POST":
-        downloadId = response.POST["cancelDownload"]
-        if download.objects.all().filter(id=downloadId).exists():
-            download.objects.get(id=downloadId).delete()
+        data = json.loads(response.body)
+        if data["value"] == "cancelDownload":
+            downloadId = data["downloadId"]
+            if download.objects.all().filter(id=downloadId).exists():
+                download.objects.get(id=downloadId).delete()
     return render(response, "main/downloads.html", {"downloads": currentDownloads})
 
 def downloadProgress(response):
-    currentDownloads = download.objects.all()
-    print(currentDownloads[0].downloaded)
-    return JsonResponse({"downloads":currentDownloads[0]}, status = 200)
+    currentDownloads = download.objects.all().values()
+    return JsonResponse({"downloads":list(currentDownloads)})
 
 def bypass(response, extensionId, imageUrl):
     sourceUrl = extension.objects.get(id=extensionId).url
@@ -421,7 +416,6 @@ def bypass(response, extensionId, imageUrl):
         'Referer': sourceUrl,
     }
     imageData = (requests.get(imageUrl, headers=headers)).content
-    # print(imageData)
     return HttpResponse(imageData, content_type="image/png")
 
 def settings(response):

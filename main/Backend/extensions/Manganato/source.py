@@ -120,6 +120,7 @@ def GetImageLinksNoProxy(page_url):
             return []
     else:
         return []
+
 def DownloadChapter(urls, comicid, chapterId, downloadId):
     # Takes in url for a manga page and downloads it
     # for now the images are going to be downloaded in the working directory
@@ -129,9 +130,10 @@ def DownloadChapter(urls, comicid, chapterId, downloadId):
     path = f"{os.getcwd()}\main\static\manga\{comicid}\{chapterId}"
     if not os.path.exists(path):
         os.makedirs(path)
-    try:
-        for index,url in enumerate(urls):
-            response = requests.get(url, headers=headers)
+
+    for index,url in enumerate(urls):
+        response = requests.get(url, headers=headers)
+        if response.ok:
             file_name = f"{path}/{index+1}.{url[len(url)-3::]}"
             print(file_name)
             if download.objects.all().filter(id=downloadId).exists() == False:
@@ -142,14 +144,15 @@ def DownloadChapter(urls, comicid, chapterId, downloadId):
 
             chapterToDownload.downloaded += 1
             chapterToDownload.save()
-        if download.objects.all().filter(id=downloadId).exists() == False:
-            return False
-        chapterToDownload = chapter.objects.get(id=chapterId)
-        chapterToDownload.downloaded = True
-        chapterToDownload.save()
-        download.objects.get(id=downloadId).delete()
+        else:
+            download.objects.get(id=downloadId).delete()
+            return True
+
+    if download.objects.all().filter(id=downloadId).exists() == False:
         return False
-    except:
-        download.objects.get(id=downloadId).delete()
-        return True
-    
+    chapterToDownload = chapter.objects.get(id=chapterId)
+    chapterToDownload.downloaded = True
+    chapterToDownload.save()
+    download.objects.get(id=downloadId).delete()
+    return False
+
