@@ -1,6 +1,6 @@
 from .models import manga, extension, chapter, download, setting, category, mangaCategory
 from main.Backend.extensions.download_extensions import download_extension
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from main.Backend.update import updateChapters, updateLibrary
 from main.Backend.extensions.extension_list import ext_list
 from main.Backend.extensions.search_manga import search
@@ -8,9 +8,6 @@ from main.Backend.extensions.add_manga import newManga
 from main.Backend.IfOnline import connected
 from django.shortcuts import render, redirect
 from win10toast import ToastNotifier
-from threading import currentThread
-from turtle import down, update
-from hashlib import new
 import requests
 import shutil
 import json
@@ -42,7 +39,6 @@ def library(response):
                     libraryUpdating.save()
             if method == "filterCategories":
                 categoryIds = response.POST.getlist("checkbox")
-                filteredCategories = []
                 filteredLibrary = []
                 for categoryId in categoryIds:
                     filteredManga = mangaCategories.filter(categoryid=categoryId)
@@ -112,8 +108,8 @@ def extensions(response):
                 return redirect("/library/")
 
             if method == 'downloadExtension':
-                extension_data = response.POST['extension']
-                downloadFailed = download_extension(ast.literal_eval(extension_data))
+                extensionData = response.POST['extension']
+                downloadFailed = download_extension(ast.literal_eval(extensionData))
                 if downloadFailed == True:
                     toast = ToastNotifier()
                     toast.show_toast(
@@ -126,15 +122,15 @@ def extensions(response):
             linkedManga = manga.objects.all().filter(source=extensionId).values()
             return JsonResponse({'linkedManga':list(linkedManga)})
 
-    all_extensions = ext_list()
-    if all_extensions != -1:
-        for otherExtension in all_extensions:
+    allExtensions = ext_list()
+    if allExtensions != -1:
+        for otherExtension in allExtensions:
             if extension.objects.all().filter(name=otherExtension["Name"]).exists():
                 otherExtension["downloaded"] = True
             else:
                 otherExtension["downloaded"] = False
-    installed_extensions = extension.objects.all()
-    return render(response, "main/extensions.html", {'installed': installed_extensions, 'all': all_extensions})
+    installedExtensions = extension.objects.all()
+    return render(response, "main/extensions.html", {'installed': installedExtensions, 'all': allExtensions})
 
 def linkedManga(response):
     extensionId = response.body
@@ -269,12 +265,25 @@ def comic(response, id, inLibrary):
                 pass
             if method == "updateChapters":
                 if comic.updating == False:
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        'Update is taking place',
+                        "Closing the app prematurely will cause manga to be deleted",
+                        duration=4,
+                    )
                     updated = updateChapters(id)
                     if updated == -1:
                         toast = ToastNotifier()
                         toast.show_toast(
                             'Update Failed',
                             f"Make sure you are connected to the internet or try again",
+                            duration=4,
+                        )
+                    if len(updated) == 0:
+                        toast = ToastNotifier()
+                        toast.show_toast(
+                            f'Update Completed',
+                            f"No new chapters are available",
                             duration=4,
                         )
                     if len(updated) > 0:
@@ -390,8 +399,8 @@ def read(response, inLibrary, comicId, chapterIndex):
                     return redirect(f"/comic/1/{comicId}/")
                 except:
                     return redirect(f"/comic/1/{comicId}/") #Toast notification will break if there is an existing notification that has been sent
-            unsorted_images = os.listdir(path)
-            if len(unsorted_images) == 0:
+            unsortedImages = os.listdir(path)
+            if len(unsortedImages) == 0:
                 try:
                     toast = ToastNotifier()
                     toast.show_toast(
@@ -406,12 +415,12 @@ def read(response, inLibrary, comicId, chapterIndex):
                     return redirect(f"/comic/1/{comicId}")
             images = []
             pagesMissing = False
-            for i in range(1, len(unsorted_images)+1):
+            for i in range(1, len(unsortedImages)+1):
                 try:
-                    if "1.png" in unsorted_images:
-                            images.append(f"manga/{comicId}/{currentChapter.id}/" + unsorted_images[unsorted_images.index(f"{str(i)}.png")])
-                    if "1.jpg" in unsorted_images:
-                            images.append(f"manga/{comicId}/{currentChapter.id}/" + unsorted_images[unsorted_images.index(f"{str(i)}.jpg")])
+                    if "1.png" in unsortedImages:
+                            images.append(f"manga/{comicId}/{currentChapter.id}/" + unsortedImages[unsortedImages.index(f"{str(i)}.png")])
+                    if "1.jpg" in unsortedImages:
+                            images.append(f"manga/{comicId}/{currentChapter.id}/" + unsortedImages[unsortedImages.index(f"{str(i)}.jpg")])
                     else:
                         pagesMissing = True
                 except:
@@ -450,7 +459,6 @@ def read(response, inLibrary, comicId, chapterIndex):
                     return redirect(f"/comic/1/{comicId}") #Notification will fail if there is an existing notification
 
         return render(response, "main/read.html", {"comic": comic, "chapter": currentChapter, "images": images})
-    # return render(response, "main/read.html", {"comic": comic, "chapter": chapter})
 
 def downloads(response):
     currentDownloads = download.objects.all().order_by('-id')

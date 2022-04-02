@@ -1,4 +1,3 @@
-import sys
 from main.models import manga, chapter, mangaCategory, category
 from main.Backend.IfOnline import connected
 import requests

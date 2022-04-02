@@ -2,7 +2,6 @@ import requests
 import re
 from bs4 import BeautifulSoup
 import os
-import base64
 from main.models import chapter, download, extension
 from main.Backend.IfOnline import connected
 extensionId = extension.objects.get(name="Manganato").id
