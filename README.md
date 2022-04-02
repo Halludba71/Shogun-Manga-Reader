@@ -1,5 +1,5 @@
-# Shogan-Manga-Reader
-Shogan is a Manga Reader Web App created for my A level Coursework.
+# Shogun-Manga-Reader
+Shogun is a Manga Reader Web App created for my A level Coursework.
 Features will try to remain similar to Tachiyomi
 
 ## Current Features

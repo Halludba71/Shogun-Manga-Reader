@@ -1,11 +1,11 @@
 **/__pycache__
 main/Backend/extensions/__pycache__/
-shogan/__pycache__
+shogun/__pycache__
 main/migrations/__pycache__
-shogan/__pycache__/wsgi.cpython-39.pyc
-shogan/__pycache__/urls.cpython-39.pyc
-shogan/__pycache__/settings.cpython-39.pyc
-shogan/__pycache__/__init__.cpython-39.pyc
+shogun/__pycache__/wsgi.cpython-39.pyc
+shogun/__pycache__/urls.cpython-39.pyc
+shogun/__pycache__/settings.cpython-39.pyc
+shogun/__pycache__/__init__.cpython-39.pyc
 main/migrations/__pycache__/0007_auto_20211127_1744.cpython-39.pyc
 main/migrations/__pycache__/0006_auto_20211018_1415.cpython-39.pyc
 main/migrations/__pycache__/0005_rename_extensions_extension.cpython-39.pyc
