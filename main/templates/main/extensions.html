@@ -21,6 +21,9 @@
                 <img src="{% static extension.logo %}" width="35" height="35" alt="">
                 <p>{{ extension }}</p>
             </div>
+            <button onclick="getLinkedManga({{extension.id}})" class="delete-button">
+                <span>Delete</span>
+            </button>
         </div>
         {% endfor %}
     {% endif %}
@@ -36,11 +39,12 @@
                 <p>{{ extension.Name }}</p> 
             </div>
             {% if extension.downloaded == False %}
-            <form action="/extensions/" method="post" class="install-button">
+            <form action="/extensions/" method="post" class="blue-button">
                 {% csrf_token %}
-                <button name="extension" value="{{ extension }}" class="install-button">
+                <button name="editExtensions" value="downloadExtension" class="blue-button">
                     <span>Install</span>
                 </button>
+                <input type="hidden" name="extension" value="{{ extension }}">
             </form>
             {% else %}
             <p class="installed">Installed</p> 
@@ -49,4 +53,53 @@
         {% endfor %}
     {% endif %}
 </div>
+
+<dialog id="deleteExtension" class="deleteExtension">
+    <p>Are you sure you to like to remove this Extension?</p>
+    <div id="linkedManga">
+        
+    </div>
+        <form action="/extensions/" method="post">
+            {% csrf_token %}
+            <button name="editExtensions" value="deleteExtension" class="delete-button">
+                <span>Delete</span>
+            </button>
+            <button type="button" class="blue-button" onclick="window.deleteExtension.close()">
+                <span>Cancel</span>
+            </button>
+            <input type="hidden" id="extensionId" name="extensionId" value="">
+        </form>
+</dialog>
+<script>
+function getLinkedManga(extensionId){
+    var xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var linkedManga = JSON.parse(this.responseText)["linkedManga"];
+            console.log(linkedManga);
+            var mangaList = document.getElementById("linkedManga");
+            mangaList.innerHTML = "";
+            var extensionIdHolder = document.getElementById("extensionId");
+            extensionIdHolder.value = extensionId;
+            if(linkedManga.length > 0){
+                warningMessage = document.createElement("p");
+                warningText = document.createTextNode("Removing this extension will delete the following manga: ");
+                warningMessage.appendChild(warningText);
+                mangaList.appendChild(warningMessage);
+                linkedManga.forEach(manga =>{
+                    node = document.createElement("ul");
+                    textnode = document.createTextNode(`${manga.title}`);
+                    node.appendChild(textnode);
+                    mangaList.appendChild(node);
+                })
+            }
+        }
+    };
+    xhr.open("POST", "", true);
+    xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.send(extensionId);
+    window.deleteExtension.showModal();
+}
+</script>
 {% endblock  %}

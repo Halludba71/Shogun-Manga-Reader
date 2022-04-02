@@ -7,38 +7,48 @@ import sys
 import os
 
 def updateLibrary():
-    if connected():
-        toast = ToastNotifier()
-        toast.show_toast(
-            'Update is taking place',
-            "Closing the app prematurely will cause manga to be deleted",
-            duration=4,
-        )
-        updates = []
-        library = manga.objects.all()
-        for comic in library:
-            if comic.updating == False:
-                print(comic.updating)
-                update = updateChapters(comic.id)
-                if len(update) > 0:
-                    updates.append(comic.title)
-                    leftToRead = len(chapter.objects.filter(comicId=comic.id).exclude(read=True))
-                    comic.leftToRead = leftToRead
-                    comic.save()
-        if len(updates) > 0:
+    library = manga.objects.all()
+    if len(library) > 0:
+        if connected():
             toast = ToastNotifier()
             toast.show_toast(
-                f'New Chapters',
-                f"{', '.join(updates)}",
+                'Update is taking place',
+                "Closing the app prematurely will cause manga to be deleted",
                 duration=4,
             )
-    else:
-        toast = ToastNotifier()
-        toast.show_toast(
-            'Update Failed',
-            "Make sure you are connected to the internet",
-            duration=4,
-        )
+            updates = []
+            for comic in library:
+                if comic.updating == False:
+                    print(comic.updating)
+                    update = updateChapters(comic.id)
+                    if len(update) > 0:
+                        updates.append(comic.title)
+                        leftToRead = len(chapter.objects.filter(comicId=comic.id).exclude(read=True))
+                        numChapters = len(chapter.objects.filter(comicId=id))
+                        comic.leftToRead = leftToRead
+                        comic.numChapters = numChapters
+                        comic.save()
+            if len(updates) > 0:
+                toast = ToastNotifier()
+                toast.show_toast(
+                    f'New Chapters',
+                    f"{', '.join(updates)}",
+                    duration=4,
+                )
+            if len(updates) == 0:
+                toast = ToastNotifier()
+                toast.show_toast(
+                    f'Update Completed',
+                    f"No new chapters are available",
+                    duration=4,
+                )
+        else:
+            toast = ToastNotifier()
+            toast.show_toast(
+                'Automatic Update Failed',
+                "Make sure you are connected to the internet",
+                duration=4,
+            )
 
 def updateChapters(comicId):
     if connected():
@@ -115,12 +125,12 @@ def updateOnStart():
         libraryUpdating.state = False
         libraryUpdating.save()
 
-# if setting.objects.get(name="automaticUpdates").state == True:
-#     t = threading.Thread(target=autoUpdate, args=(setting.objects.get(name="automaticUpdates").value, ))
-#     t.setDaemon = True
-#     t.start()
+if setting.objects.get(name="automaticUpdates").state == True:
+    t = threading.Thread(target=autoUpdate, args=(setting.objects.get(name="automaticUpdates").value, ))
+    t.setDaemon = True
+    t.start()
 
-# else:
-#     t = threading.Thread(target=updateOnStart)
-#     t.setDaemon = True
-#     t.start()
+else:
+    t = threading.Thread(target=updateOnStart)
+    t.setDaemon = True
+    t.start()

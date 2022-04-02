@@ -15,18 +15,12 @@ the identifier is then assigned like so manga [ cover: identieer]
 class manga(models.Model):
 	title = models.TextField(default='', blank=True)
 	cover = models.TextField(default='', blank=True)
-
-	options = [
-	('Manga', 'Manga'),
-	('Novel', 'Novel')
-	]
-	type = models.CharField(max_length=6,choices=options, default='Manga')
 	description = models.TextField(default=None, blank=True)
 	categories = models.TextField(default="All,")
 	source = models.IntegerField()
 	author = models.TextField(default="", blank=True)
 	orientation = models.TextField(default="left-to-right")
-	NumChapters = models.IntegerField(default=0)
+	numChapters = models.IntegerField(default=0)
 	url = models.TextField(default="")
 	leftToRead = models.IntegerField()
 	updating = models.BooleanField(default=False)

@@ -77,29 +77,69 @@ def browse(response):
 
 def extensions(response):
     if response.method == "POST":
-        extension_data = response.POST['extension']
-        downloadFailed = download_extension(ast.literal_eval(extension_data))
-        if downloadFailed == True:
-            toast = ToastNotifier()
-            toast.show_toast(
-                f'Extension download failed',
-                'Check your internet connection and try again',
-                duration=3,
-            )
-    
-    all_extensions = ext_list()
-    for otherExtension in all_extensions:
-        if extension.objects.all().filter(name=otherExtension["Name"]).exists():
-            otherExtension["downloaded"] = True
+        method = response.POST.get('editExtensions', None)
+        if method is not None:
+            if method == 'deleteExtension':
+                extensionId = response.POST['extensionId']
+                print(extensionId)
+                extensionToDelete = extension.objects.get(id=extensionId)
+                logoPath = f"{os.getcwd()}/main/static/{extensionToDelete.logo}"
+                if os.path.exists(logoPath): # checks if the image exists in the directory before deleting
+                    os.remove(logoPath) # deletes the source logo
+                extensionPath = f"{os.getcwd()}\main\Backend\extensions\{extensionToDelete.name}"
+                if os.path.exists(extensionPath): # checks if the directory where extension should be installed exists
+                    shutil.rmtree(extensionPath) #deletes extension source.py
+                toast = ToastNotifier() # Notifies user of deletion
+                toast.show_toast(
+                    f'Extension: {extensionToDelete.name} was deleted successfully',
+                    '',
+                    duration=3,
+                )
+                linkedManga = manga.objects.all().filter(source=extensionToDelete.id)
+                for linked in linkedManga:
+                    chapters = chapter.objects.all().filter(comicId=linked.id)
+                    for item in chapters:
+                        if item.downloaded == True:
+                            path = f"{os.getcwd()}\main\static\manga\{linked.id}\{item.id}"
+                            if os.path.exists(path):
+                                shutil.rmtree(path)
+                        item.delete()
+                    coverPath = f"{os.getcwd()}/main/static/{linked.cover}"
+                    if os.path.exists(coverPath) == True:
+                        os.remove(coverPath)
+                    linked.delete()
+                extensionToDelete.delete() #removes extension object from database
+                return redirect("/library/")
+
+            if method == 'downloadExtension':
+                extension_data = response.POST['extension']
+                downloadFailed = download_extension(ast.literal_eval(extension_data))
+                if downloadFailed == True:
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        f'Extension download failed',
+                        'Check your internet connection and try again',
+                        duration=3,
+                    )
         else:
-            otherExtension["downloaded"] = False
+            extensionId = response.body
+            linkedManga = manga.objects.all().filter(source=extensionId).values()
+            return JsonResponse({'linkedManga':list(linkedManga)})
+
+    all_extensions = ext_list()
+    if all_extensions != -1:
+        for otherExtension in all_extensions:
+            if extension.objects.all().filter(name=otherExtension["Name"]).exists():
+                otherExtension["downloaded"] = True
+            else:
+                otherExtension["downloaded"] = False
     installed_extensions = extension.objects.all()
     return render(response, "main/extensions.html", {'installed': installed_extensions, 'all': all_extensions})
 
-def novel(response, id):
-    # content = epub2text('E:\Abdullah\Code\Python\Computer Science  NEA\master\Shogan-Manga-Reader-main\main\book2.epub')
-    novel = manga.objects.get(id=id)
-    return render(response, "main/novel.html", {"novel":novel})
+def linkedManga(response):
+    extensionId = response.body
+    linkedManga = manga.objects.all().filter(source=extensionId).values()
+    return JsonResponse({'linkedManga':list(linkedManga)})
 
 def comic(response, id, inLibrary):
     if inLibrary == 1:
@@ -151,6 +191,7 @@ def comic(response, id, inLibrary):
                             shutil.rmtree(path)
                     item.delete()
                 os.remove(f"{os.getcwd()}/main/static/{comic.cover}")
+                mangaCategory.objects.filter(mangaid=comic.id).delete()
                 comic.delete()
                 return redirect("/library/")
             if method == "downloadSelected":
@@ -244,7 +285,10 @@ def comic(response, id, inLibrary):
                             duration=4,
                         )
                         leftToRead = len(chapter.objects.filter(comicId=id).exclude(read=True))
+                        numChapters = len(chapter.objects.filter(comicId=id))
                         comic.leftToRead = leftToRead
+                        comic.numChapters = numChapters
+                        comic.save()
             if method == "editCategories":
                 newCategories = response.POST.getlist("checkbox")
                 for item in currentCategories:
@@ -264,7 +308,7 @@ def comic(response, id, inLibrary):
                 nextChapter = item.index
                 if item.read == False:
                     break
-            if nextChapter == comic.NumChapters:
+            if nextChapter == comic.numChapters:
                 if chapter.objects.get(index=nextChapter, comicId=comic.id).read == True:
                     nextChapter = -1
     elif inLibrary == 0:

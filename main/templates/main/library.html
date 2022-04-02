@@ -5,92 +5,69 @@
 
     <link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
     {{ block.super }}
-{% endblock %}
-
-{% block content %}
-<h2>Library</h2>
-{% if library|length == 0 %}
-<p>You have no Manga in your library, go to browse to add them</p>
-{% else %}
-
-
-<input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search Library...">
-<div class="refresh-tooltip" id="refresh-button">
-  <span class="refresh-tooltipText">Update Library</span>
-  <form action="/library/" method="post">
-      {% csrf_token %}
-      <button type="submit" name="editLibrary" value="updateLibrary" class="tool">
+    {% endblock %}
+    
+    {% block content %}
+    <h2>Library</h2>
+    {% if library|length == 0 %}
+    <p>You have no Manga in your library, go to browse to add them</p>
+    {% else %}
+    
+    
+    <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search Library...">
+    <div class="refresh-tooltip" id="refresh-button">
+      <span class="refresh-tooltipText">Update Library</span>
+      <form action="/library/" method="post">
+        {% csrf_token %}
+        <button type="submit" name="editLibrary" value="updateLibrary" class="tool">
           <img src="{% static 'images/refresh.svg' %}" alt="">
+        </button>
+      </form>
+    </div>
+    <div class="tooltip">
+      <span class="tooltiptext">Filter Categories</span>
+      <button class="tool" onclick="window.filterCategories.showModal()">
+        <img src="{% static 'images/filter.svg' %}" alt="">
       </button>
-  </form>
-</div>
-<div class="tooltip">
-  <span class="tooltiptext">Filter Categories</span>
-  <button class="tool" onclick="window.filterCategories.showModal()">
-    <img src="{% static 'images/filter.svg' %}" alt="">
-  </button>
-</div>
-<link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
+    </div>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/library.css' %}">
 
-<dialog id="filterCategories" class="filterCategories">
-  <form action="/library/" method="post">
-    {% csrf_token %}
-    <table>
-      {% for category in categories %}
-      <tr>
-        <td>
-          <input type="checkbox" value="{{category.id}}" name="checkbox">
-        </td>
-        <td>
-          {{category.name}}
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-    <button type="submit" name="editLibrary" value="filterCategories">Submit</button>
-    <button type="submit" name="editLibrary" value="cancelLibraryFilter">Cancel Filter</button>
-  </form>
-</dialog>
-<div class="books" id="books">
-{% for book in library %}
-
-    {% if book.type == "Novel" %}
+    <dialog id="filterCategories" class="filterCategories">
+      <form action="/library/" method="post">
+        {% csrf_token %}
+        <table>
+          {% for category in categories %}
+          <tr>
+            <td>
+              <input type="checkbox" value="{{category.id}}" name="checkbox">
+            </td>
+            <td>
+              {{category.name}}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        <button type="submit" name="editLibrary" value="filterCategories">Submit</button>
+        <button type="submit" name="editLibrary" value="cancelLibraryFilter">Cancel Filter</button>
+      </form>
+    </dialog>
+    <div class="books" id="books">
+      {% for book in library %}
       <div class="book">
-      <a href="../novel/{{ book.id }}"><img class="book-cover" src="{% static book.cover %}" width="130" height="180" /></a>
-    	<div class="book-name" id="book-name">{{ book }}</div>
+        <a href="../comic/1/{{ book.id }}" class="container">
+          {% if book.leftToRead != 0 %}
+          <div class="leftToRead">
+            {{book.leftToRead}}
+          </div>
+          {% endif %}
+          <img class="book-cover" src="{% static book.cover %}" width="130" height="180" />
+        </a>
+        <div class="book-name" id="book-name">{{ book }}</div>
     	</div>
-    {% elif book.type == "Manga" %}
-      <div class="book">
-        <!-- This will cause issues later on since when you try to read manga not in the database -->
-      <a href="../comic/1/{{ book.id }}" class="container">
-        {% if book.leftToRead != 0 %}
-        <div class="leftToRead">
-          {{book.leftToRead}}
-        </div>
-        {% endif %}
-        <img class="book-cover" src="{% static book.cover %}" width="130" height="180" />
-      </a>
-    	<div class="book-name" id="book-name">{{ book }}</div>
-    	</div>
-      {% endif %}
       
       {% endfor %}
     </div>
-{% endif %}
-<script>
-  function SearchChapters(){     
-    var input = document.getElementById("search_box")
-    var filter = input.value.toUpperCase();
-    var books = document.getElementsByClassName("book");
-    for (i = 0; i < books.length; i++) {
-        bookName = books[i].getElementsByClassName("book-name")[0];
-        txtValue = bookName.textContent || bookName.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            books[i].style.display = "";
-        } else {
-            books[i].style.display = "none";
-        }
-    }
-  }
-</script>
+    {% endif %}
+    <script src="{% static 'js/library.js' %}"></script>
 {% endblock  %}
+    

@@ -22,7 +22,7 @@ def newManga(ext, chapters, metaData):
             return -1
     else:
         return -1
-    newManga = manga.objects.create(title=metaData["name"], url=metaData["url"], cover=fileName, description=metaData["description"], source=ext.id, author=metaData["author"], orientation="vertical", NumChapters=numChapters, leftToRead=numChapters)
+    newManga = manga.objects.create(title=metaData["name"], url=metaData["url"], cover=fileName, description=metaData["description"], source=ext.id, author=metaData["author"], orientation="vertical", numChapters=numChapters, leftToRead=numChapters)
     all = category.objects.get(name="All")
     mangaCategory.objects.create(categoryid=all.id, mangaid=newManga.id)
     reversed = chapters[::-1]

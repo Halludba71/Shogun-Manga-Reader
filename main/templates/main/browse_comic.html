@@ -6,32 +6,32 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/comic.css' %}">
     <link rel="stylesheet" href="{% static 'css/browse_comic.css' %}">
     {{ block.super }}
-{% endblock %}
-
-{% block content %} 
-<!-- Put the manga name on the right of the cover as well -->
-<div class="manga-info">
-    <img class="manga-cover" src="{{comic.cover}}" alt="" width="176" height="264.26">
-    <h1  class="manga-name">{{comic.name}}</h1>
-    <h3>By {{comic.author}}</h3>
-    <form action="/comic/0/0" method="post">
-        {% csrf_token %}
-        <button class="addToLibrary" onclick="this.form.submit(); this.disabled=true; this.value='Adding to library...';">
-            Add To library
-        </button>
-    </form>
-    <h4 class="manga-description">
-        {{comic.description}}
-    </h4>
-    <!-- <h1>Chapters</h1> -->
-</div>
-<br>
-
-<div class="manga-chapters">
-    <div class="top-row">
+    {% endblock %}
+    
+    {% block content %} 
+    <!-- Put the manga name on the right of the cover as well -->
+    <div class="manga-info">
+        <img class="manga-cover" src="{{comic.cover}}" alt="" width="176" height="264.26">
+        <h1  class="manga-name">{{comic.name}}</h1>
+        <h3>By {{comic.author}}</h3>
+        <form action="/comic/0/0" method="post">
+            {% csrf_token %}
+            <button class="addToLibrary" onclick="this.form.submit(); this.disabled=true; this.value='Adding to library...';">
+                Add To library
+            </button>
+        </form>
+        <h4 class="manga-description">
+            {{comic.description}}
+        </h4>
+        <!-- <h1>Chapters</h1> -->
+    </div>
+    <br>
+    
+    <div class="manga-chapters">
+        <div class="top-row">
         <h2>Chapters</h2>
     </div>
-        
+    
     <div class="toolContainer">
         <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
     </div>
@@ -47,24 +47,5 @@
     </ul>
 </form>
 </div>
-<script>
-    function SearchChapters(){
-        console.log("hello")
-        var input = document.getElementById("search_box")
-        var filter = input.value.toUpperCase();
-        var list = document.getElementById("chapters");
-        var li = list.getElementsByTagName("li");
-        for (i = 0; i < li.length; i++) {
-            row = li[i].getElementsByTagName("p")[0];
-            if (row) {
-                txtValue = row.textContent || td.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    li[i].style.display = "";
-                } else {
-                    li[i].style.display = "none";
-                }
-            }
-        }
-    }
-</script>
+<script src="{% static 'js/browse_comic.js' %}"></script>
 {% endblock  %}
