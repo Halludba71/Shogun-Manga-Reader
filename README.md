@@ -13,5 +13,7 @@ Features will try to remain similar to Tachiyomi
 ## Dependencies
 Written with Python (3.8.6)
 
--
--
+- django
+- requests
+- bs4
+- win10toast
