@@ -14,7 +14,6 @@ import json
 import sys
 import ast
 import os
-import re
 
 # from .reader import * # This line is currently not needed
 # Create your views here.

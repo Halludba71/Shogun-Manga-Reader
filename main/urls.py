@@ -1,4 +1,8 @@
 from django.urls import path
+from main.models import setting
+from main.Backend.cleanDatabase import checkDatabase
+from main.Backend.update import autoUpdate, updateOnStart
+import threading
 from . import views
 
 urlpatterns = [
@@ -14,3 +18,16 @@ urlpatterns = [
     path("downloads/progress/", views.downloadProgress, name="downloadProgress"),
     path("settings/", views.settings, name="settings")
 ]
+
+## urls.py is top level, so startup code can be written here to be executed once
+checkDatabase()
+
+if setting.objects.get(name="automaticUpdates").state == True:
+    t = threading.Thread(target=autoUpdate, args=(setting.objects.get(name="automaticUpdates").value, ))
+    t.setDaemon = True
+    t.start()
+
+else:
+    t = threading.Thread(target=updateOnStart)
+    t.setDaemon = True
+    t.start()

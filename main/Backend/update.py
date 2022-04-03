@@ -1,7 +1,6 @@
 from main.models import manga, extension, chapter, setting
 from main.Backend.IfOnline import connected
 from win10toast import ToastNotifier
-import threading
 import time
 import sys
 import os
@@ -18,16 +17,17 @@ def updateLibrary():
             )
             updates = []
             for comic in library:
-                if comic.updating == False:
-                    print(comic.updating)
-                    update = updateChapters(comic.id)
-                    if len(update) > 0:
-                        updates.append(comic.title)
-                        leftToRead = len(chapter.objects.filter(comicId=comic.id).exclude(read=True))
-                        numChapters = len(chapter.objects.filter(comicId=id))
-                        comic.leftToRead = leftToRead
-                        comic.numChapters = numChapters
-                        comic.save()
+                if manga.objects.all().filter(id=comic.id).exists():
+                    if comic.updating == False:
+                        print(comic.updating)
+                        update = updateChapters(comic.id)
+                        if len(update) > 0:
+                            updates.append(comic.title)
+                            leftToRead = len(chapter.objects.filter(comicId=comic.id).exclude(read=True))
+                            numChapters = len(chapter.objects.filter(comicId=id))
+                            comic.leftToRead = leftToRead
+                            comic.numChapters = numChapters
+                            comic.save()
             if len(updates) > 0:
                 toast = ToastNotifier()
                 toast.show_toast(
@@ -125,12 +125,3 @@ def updateOnStart():
         libraryUpdating.state = False
         libraryUpdating.save()
 
-if setting.objects.get(name="automaticUpdates").state == True:
-    t = threading.Thread(target=autoUpdate, args=(setting.objects.get(name="automaticUpdates").value, ))
-    t.setDaemon = True
-    t.start()
-
-else:
-    t = threading.Thread(target=updateOnStart)
-    t.setDaemon = True
-    t.start()
