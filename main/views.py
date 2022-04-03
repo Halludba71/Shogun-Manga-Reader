@@ -142,6 +142,7 @@ def comic(response, id, inLibrary):
         comic = manga.objects.get(id=id)
         currentCategories = [category.objects.get(id=item.categoryid) for item in mangaCategory.objects.filter(mangaid=id)]
         allCategories = category.objects.all()
+        extensionName = extension.objects.get(id=comic.source)
         if comic.updating == True:
             try:
                 toast = ToastNotifier()
@@ -354,7 +355,7 @@ def comic(response, id, inLibrary):
         response.session['metaData'] = comic
         return render(response, "main/browse_comic.html", {"comic":comic, "chapters":chapters})        
 
-    return render(response, "main/comic.html", {"comic":comic, "chapters":chapters, "nextChapter": nextChapter, "allCategories": allCategories, "currentCategories":currentCategories})
+    return render(response, "main/comic.html", {"comic":comic, "chapters":chapters, "nextChapter": nextChapter, "allCategories": allCategories, "currentCategories":currentCategories, "extensionName":extensionName})
 
 def read(response, inLibrary, comicId, chapterIndex):
     comic = manga.objects.get(id=comicId)
