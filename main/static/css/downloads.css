@@ -1,0 +1,48 @@
+.download_list{
+    margin: auto;
+    padding: 20px;
+    max-width: 75%;
+    border-radius: 10px;
+    background-color:#23232b;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+  
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: rgb(73, 71, 71);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 3px;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+    margin-bottom: 10px;
+}
+  
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+button.tool{
+    margin-top: 10px;
+    background-color: #2d89e3;
+    border: 5px solid #2d89e3;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+    color: black;
+    margin-bottom: 10px;
+}
+
+button:hover.tool{
+    background-color: #519fd3;
+    border: 5px solid #519fd3;
+}

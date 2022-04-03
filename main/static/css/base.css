@@ -1,0 +1,127 @@
+
+:root {
+    font-family: 'Open Sans';
+    --text-primary: #b6b6b6;
+    --text-secondary: #ececec;
+    --bg-primary:#152232;
+    --bg-secondary:#141418;
+
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-display: swap;
+    src: url('OpenSans-Regular.ttf') format('truetype');
+}
+
+body {
+
+    color:#748899;
+    /* background-color: #0b1622; old one */
+    background-color: #101013;
+    margin: 0;
+    padding: 0;
+}
+
+body::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+body::-webkit-scrollbar-track{
+    background: #1e1e24;
+}
+
+body::-webkit-scrollbar-thumb{
+    background: #6649b8;
+}
+
+main {
+    margin-left: 5rem;
+    padding: 0rem;
+    
+}
+
+h1 {
+    margin-top: 0px;
+}
+.navbar{
+    width: 60px;
+    height: 100vh;
+    position: fixed;
+    /* background-color: var(--bg-primary); old */
+    background-color: #141418;
+}
+
+.navbar-nav{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nav-item{
+    width:100%;
+}
+
+.logo{
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(112deg) brightness(105%) contrast(105%);
+    padding-top: 10;
+    padding-left: 0;
+}
+
+.library:hover{
+    filter: invert(64%) sepia(100%) saturate(4587%) hue-rotate(190deg) brightness(98%) contrast(92%);
+}
+
+.library{
+    filter: invert(60%) sepia(80%) saturate(913%) hue-rotate(166deg) brightness(87%) contrast(2%);
+    padding-left: 7px;
+    padding-top: 90px;
+}
+.link-text{
+    display: none;
+    margin-left: 1rem;
+}
+
+.browse{
+    filter: invert(60%) sepia(80%) saturate(913%) hue-rotate(166deg) brightness(87%) contrast(2%);
+    padding-left: 0px;
+    padding-top: 15px;
+}
+
+.browse:hover{
+    filter: invert(64%) sepia(80%) saturate(4587%) hue-rotate(190deg) brightness(98%) contrast(92%);
+}
+
+.extensions{
+    filter: invert(60%) sepia(80%) saturate(913%) hue-rotate(166deg) brightness(87%) contrast(2%);
+    padding-left: 0px;
+    padding-top: 15px;
+}
+
+.extensions:hover{
+    filter: invert(64%) sepia(80%) saturate(4587%) hue-rotate(190deg) brightness(98%) contrast(92%);
+}
+
+.downloads:hover{
+    filter: invert(64%) sepia(80%) saturate(4587%) hue-rotate(190deg) brightness(98%) contrast(92%);
+}
+
+.downloads{
+    filter: invert(60%) sepia(80%) saturate(913%) hue-rotate(166deg) brightness(87%) contrast(2%);
+    padding-left: 0px;
+    padding-top: 15px;
+}
+
+.settings{
+    filter: invert(60%) sepia(80%) saturate(913%) hue-rotate(166deg) brightness(87%) contrast(2%);
+    padding-left: 0px;
+    padding-top: 15px;
+}
+
+.settings:hover{
+    filter: invert(64%) sepia(80%) saturate(4587%) hue-rotate(190deg) brightness(98%) contrast(92%);
+}
+

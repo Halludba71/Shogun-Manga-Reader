@@ -1,0 +1,52 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block extra_head_content %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/downloads.css' %}">
+    {{ block.super }}
+    {% endblock %}
+
+    {% block content %}
+    <h2>Downloads</h2>
+    <table class="download_list" id="download_list">
+        {% if downloads|length == 0%}
+        <tr>
+            <td>
+                <p>No downloads are taking place!</p>
+            </td>
+        </tr>
+        {% else %}
+        {% for download in downloads %}
+        <tr id="{{download.id}}">
+            <td>
+                <h4>{{download.mangaName}}:</h4>
+            </td>
+            <td>
+                <p>{{download.name}}</p>
+            </td>
+            <td>
+                <p>{{download.downloaded}}/{{download.totalPages}}</p>
+            </td>
+            <td>
+                <div class="tooltip">
+                <span class="tooltipText">Cancel Download</span>
+                <button onclick="cancelDownload({{download.id}})" class="tool">
+                    Cancel Download
+                </button>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+</table>
+<script>
+    {% if downloads|length == 0 %}
+    var downloading = false;
+    {% else %}
+    var downloading = true
+    {% endif %}
+</script>
+<script src="{% static 'js/downloads.js' %}"></script>
+{% endblock%}

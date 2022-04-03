@@ -1,0 +1,117 @@
+img.book-cover{
+  border-radius: 6%;
+}
+
+.book-name{
+  font-weight: bold;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 140px;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+}
+
+.books{
+  margin: 0 auto;
+  display: grid;
+  max-width: 10000px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+}
+
+.search_box{
+  padding: 10px;
+  margin-bottom: 1rem;
+  background-color: #141418;
+  color: white;
+  outline: none;
+  border: 1px solid #748899;
+  border-radius: 10px;
+}
+
+.leftToRead{
+  border-radius: 6px;
+  background-color: #2d89e3;
+  color: #141418;
+  float: left;
+  position: absolute;
+  z-index: 1000;
+  font-weight: bold;
+  padding: 3px;
+  padding-right: 5px;
+  padding-left: 8px;
+}
+.container{
+  position: relative;
+}
+
+
+.refresh-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.refresh-tooltip .refresh-tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: rgb(73, 71, 71);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 3px;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+  margin-bottom: 10px;
+}
+
+.refresh-tooltip:hover .refresh-tooltiptext {
+  visibility: visible;
+}
+
+button.tool{
+  background-color: #363738;
+  border: 4px solid #363738;
+  padding: 1px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: none;
+  margin-left: 20px;
+}
+
+button:hover.tool{
+  transition: 0.2s ease-in;
+  border: 4px solid #262729;
+  background-color: #262729;
+}
+
+.filterCategories{
+  background-color:#23232b;
+  border-radius: 10px;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: rgb(73, 71, 71);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 3px;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+  margin-bottom: 10px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}

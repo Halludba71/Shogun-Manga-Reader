@@ -1,0 +1,325 @@
+
+
+/* .center{
+    margin: auto;
+    width: 60%;
+    /* background-color: #141418; */
+    /* border: 5px solid #FFFF00; */
+    /* padding: 10px;
+} */
+
+.manga-cover{
+    float: left;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.manga-name{
+    /* padding:20px;
+    padding-right: 200px; */
+
+    /* padding-bottom: 50px; */
+    padding-top: 20px;
+}
+
+.manga-info{
+    /* overflow: hidden; */
+    margin: auto;
+    padding: 20px;
+    max-width: 75%;
+    border-radius: 10px;
+    background-color:#141418;
+}
+
+.manga-chapters{
+    /* overflow: hidden; */
+    margin: auto;
+    padding: 20px;
+    max-width: 75%;
+    border-radius: 10px;
+    background-color:#141418;
+}
+
+.chapterLink{
+    color: floralwhite;
+}
+
+.manga-description{
+    padding-top: 220px;
+}
+
+.search_box{
+    padding: 10px;
+    margin-bottom: 1rem;
+    background-color: #141418;
+    color: white;
+    outline: none;
+    border: 1px solid #748899;
+    border-radius: 10px;
+}
+
+.read{
+    color: #525252;
+}
+
+button.tool{
+    background-color: #363738;
+    border: 4px solid #363738;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+button:hover.tool{
+    transition: 0.2s ease-in;
+    border: 4px solid #262729;
+    background-color: #262729;
+}
+
+.chapterEditor{
+    margin-left: auto;
+}
+
+.chapterEditor.hidden{
+    visibility: hidden;
+}
+.toolContainer{
+    display: flex;
+}
+
+.top-row{
+    /* display:inline; */
+    white-space: nowrap;
+
+}
+
+.top-row h2{
+    display: inline-block;
+}
+
+.top-row .tooltip{
+    display: inline-block;
+}
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+  
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: rgb(73, 71, 71);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 3px;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+    margin-bottom: 10px;
+}
+  
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-button{
+    background-color: #2d89e3;
+    border: 5px solid #2d89e3;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+    color: black;
+    margin-bottom: 10px;
+}
+  
+.dropdown-button:hover, .dropdown-button:focus {
+    background-color: #519fd3;
+    border: 5px solid #519fd3;
+
+}
+
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    z-index: 1;
+}
+
+
+/* Links inside the dropdown */
+.dropdown-content button {
+    background-color: #2d89e3;
+    border: 5px solid #2d89e3;
+    cursor: pointer;
+    box-shadow: none;
+    
+}
+
+.dropdown-content button:hover {
+    background-color: #519fd3;
+    border: 5px solid #519fd3;
+    color: #fff;
+}
+
+.filter-button{
+    background-color: #363738;
+    border: 4px solid #363738;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+    margin-bottom: 10px;
+}
+
+.filter-button:hover, .filter-button:focus{
+    transition: 0.2s ease-in;
+    border: 4px solid #262729;
+    background-color: #262729;
+}
+
+.show {
+    display:block;
+}
+
+.confirmYes{
+    background-color: #e3422d;
+    border: 5px solid #e3422d;
+    cursor: pointer;
+    box-shadow: none;
+    color: #fff;
+}
+
+.confirmNo{
+    background-color: #2d89e3;
+    border: 5px solid #2d89e3;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+/* .disabled button{
+    background-color: #0000dd;
+    border: 5px solid #1a1a1b;
+    box-shadow: none;
+    color: #3d3e41;
+} */
+
+.continue-reading button{
+    margin-top: 10px;
+    background-color: #2d89e3;
+    border: 5px solid #2d89e3;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.continue-reading button:hover{
+    background-color: #519fd3;
+    border: 5px solid #519fd3;
+}
+
+.continue-reading button:disabled{
+    background-color: #2b2b2e;
+    border: 5px solid #2b2b2e;
+    box-shadow: none;
+    cursor:not-allowed;
+    color: #71717a;
+}
+
+a {
+    text-decoration: none;
+}
+
+.downloaded{
+    color: #40a559;
+}
+
+.close-filter{
+    float: right;
+}
+
+.filter-buttons{
+    margin-top: 50px;
+}
+
+#refresh-button{
+    float: right;
+}
+
+.refresh-tooltip {
+    position: relative;
+    display: inline-block;
+}
+  
+.refresh-tooltip .refresh-tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: rgb(73, 71, 71);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 3px;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px;
+    margin-bottom: 10px;
+}
+  
+.refresh-tooltip:hover .refresh-tooltiptext {
+    visibility: visible;
+}
+
+.editCategories{
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    background-color:#23232b;
+    color: #fff;
+}
+
+.cancel-button{
+    margin-top: 10px;
+    background-color: #e32d2d;
+    border: 5px solid #e32d2d;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.cancel-button:hover{
+    background-color: #db0e0e;
+    border: 5px solid #db0e0e;
+}
+
+.submit-button{
+    margin-top: 10px;
+    background-color: #2d89e3;
+    border: 5px solid #2d89e3;
+    padding: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.submit-button:hover{
+    background-color: #519fd3;
+    border: 5px solid #519fd3;
+}

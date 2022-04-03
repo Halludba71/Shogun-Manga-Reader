@@ -1,0 +1,49 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block extra_head_content %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/browse.css' %}">
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<h2>Browse</h2>
+{% if extensions|length == 0 %}
+<p>You have no extensions installed. Go to Extensions to install them.</p>
+{% else %}
+<form action="." method="get">
+    <input type="text" id="search_box" name="search_box" placeholder="Search Manga..." required=True class="search_box">
+
+</form>
+{% for k,v in results.items %}
+        <h3>{{k}}</h3>
+        <div class="books">
+            {% if v|length > 0 %}
+                {% for k2, v2 in v.items %}
+                <div class="book">
+                    {% if v2.2 == True %}
+                    <a href="../comic/1/{{ v2.0 }}">
+                        <img class="book-cover" src="{% static v2.1 %}" width="130" height="180" />
+                    </a>
+                    <div class="book-name">{{ k2 }}</div>
+                    {% else %}
+                    <form action="/browse/" method="post">
+                        {% csrf_token %}
+                        <button name="mangaInfo" value="{{k}},{{v2.0}}">
+                            <img class="book-cover" src="{{v2.1}}" width="130" height="180" />
+                        </button>
+                        <div class="book-name">{{ k2 }}</div>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No Search Results</p>
+            {% endif %}
+        </div>
+{% endfor %}
+
+{% endif %}
+{% endblock  %}

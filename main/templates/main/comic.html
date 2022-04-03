@@ -1,0 +1,204 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block extra_head_content %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/comic.css' %}">
+    {{ block.super }}
+    {% endblock %}
+    
+    {% block content %} 
+    <!-- Put the manga name on the right of the cover as well -->
+    <div class="manga-info">
+    <img class="manga-cover" src="{% static comic.cover %}" alt="" width="176" height="264.26">
+    <div class="refresh-tooltip" id="refresh-button">
+        <span class="refresh-tooltipText">Update Chapters</span>
+        <form action="/comic/1/{{comic.id}}" method="post">
+            {% csrf_token %}
+            <button type="submit" name="editManga" value="updateChapters" class="tool">
+                <img src="{% static 'images/refresh.svg' %}" alt="">
+            </button>
+        </form>
+    </div>
+    <h1 class="manga-name">{{comic}}</h1>
+    <h3>By {{comic.author}}</h3>
+    <h3>{{extensionName}}</h3>
+    <div class="dropdown">
+        <button class="dropdown-button" onclick="showDropdown()">In Library</button>
+        <div id="dropdown-content" class="dropdown-content">
+            {% if allCategories|length > 1 %}
+            <button onclick="window.editCategories.showModal()">Change Categories</button>
+            {% endif %}
+            <button onclick="window.confirmationDialog.showModal()">Remove from library</button>
+        </div>
+    </div>
+    <br>
+    <div class="tooltip">
+        <span class="tooltipText">View Source</span>
+        <button class="tool">
+            <a href="{{comic.url}}" target="_blank">
+                <img src="{% static 'images/link.svg' %}" alt="">
+            </a>
+        </button>
+    </div>
+    <div class="continue-reading">
+        {% if nextChapter == -1 %}
+            <button class="disabled" disabled>
+                All chapters read
+            </button>
+            {% else %}
+            <a href="/read/1/{{comic.id}}/{{nextChapter}}">
+                <button>
+                    Continue Reading
+                </button>
+            </a>
+            {% endif %}
+        </div>
+        <h4 class="manga-description">
+            {{comic.description}}
+        </h4>
+        <!-- <h1>Chapters</h1> -->
+    </div>
+    <br>
+    <dialog id="confirmationDialog">
+        <p>
+            Are you sure you would like to remove manga from library?
+            Removing manga will delete chapters and progress.
+        </p>
+        <form action="/comic/1/{{comic.id}}" method="post">
+            {% csrf_token %}
+            <button class="confirmYes" type="submit" name="editManga" value="removeManga" onclick="window.confirmationDialog.close();">Yes</button>
+        </form>
+        <button class="confirmNo" onclick="window.confirmationDialog.close();">No</button>
+    </dialog>
+    <dialog id="filterChapters">
+        <button onclick="window.filterChapters.close()" class="close-filter">Close</button>
+        <div class="filter-buttons">
+            <form action="/comic/1/{{comic.id}}" method="post">
+                {% csrf_token %}
+                <button class="confirmNo" type="submit" name="editManga" value="showDownloaded">Show Downloaded</button>
+                <button class="confirmNo" type="submit" name="editManga" value="showRead">Show Read</button>
+                <button class="confirmNo" type="submit" name="editManga" value="showUnread">Show Unread</button>
+                <button class="confirmYes" type="submit" name="editManga" value="cancelFilter">Cancel Filter</button>
+            </form>
+        </div>
+    </dialog>
+    
+    <dialog id="editCategories" class="editCategories">
+        <h3>Set Categories</h3>
+        <form action="/comic/1/{{comic.id}}" method="post">
+            {% csrf_token %}
+            <table>
+                {% for category in allCategories %}
+                {% if category.name != 'All' %}
+                <tr>
+                    <td>
+                        {% if category in currentCategories%}
+                        <input checked type="checkbox" value="{{category.id}}" name="checkbox">
+                        {% else %}
+                        <input type="checkbox" value="{{category.id}}" name="checkbox">
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{category.name}}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </table>
+            <button type="submit" class="submit-button" name="editManga" value="editCategories">Submit</button>
+            <button type="button" class="cancel-button" onclick="window.editCategories.close()">Cancel</button>
+        </form>
+    </dialog>
+    
+    <div class="manga-chapters">
+        <div class="top-row">
+            <h2>Chapters</h2>
+            <div class="tooltip">
+                <span class="tooltiptext">Filter Chapters</span>
+                <button class="filter-button" onclick="window.filterChapters.showModal()">
+                    <img src="{% static 'images/filter.svg' %}" alt="">
+                </button>
+            </div>
+        </div>
+        
+        <input type="text" id="search_box" name="search_box" class="search_box" onkeyup="SearchChapters()" placeholder="Search For Chapters...">
+        <form action="/comic/1/{{comic.id}}" method="post">
+            {% csrf_token %}
+            <div class="toolContainer">
+                <div class="chapterEditor hidden" id="chapterEditor">
+                    <div class="tooltip">
+                <span class="tooltipText">Cancel Selection</span>
+                <button type="reset" class="tool" onclick="CancelSelection()">
+                    <img src="{% static 'images/unselect_all.svg' %}" alt="">
+                </button class="tool">
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Select All</span>
+                <button type="button" class="tool" onclick="selectAll()">
+                    <img src="{% static 'images/select_all.svg' %}" alt="">
+                </button class="tool">
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Delete If Downloaded Is Selected</span>
+                <button type="submit" name="editManga" value="deleteDownloaded" class="tool">
+                    <img src="{% static 'images/delete.svg' %}" width="24" height="24" alt="">
+                </button class="tool">
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Select Unselected</span>
+                <button type="button" class="tool" onclick="selectUnselected()">
+                    <img src="{% static 'images/select_unselected.svg' %}" alt="">
+                </button class="tool">
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Download Selected Chapters</span>
+                <button type="submit" name="editManga" value="downloadSelected" class="tool">
+                    <img src="{% static 'images/download.svg' %}" alt="">
+                </button class="tool">
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Mark selected chapters as read</span>
+                <button type="submit" name="editManga" value="markRead" class="tool">
+                    <img src="{% static 'images/read.svg' %}" alt="">
+                </button class="tool">
+            </div>
+            <div class="tooltip">
+                <span class="tooltipText">Mark selected chapters as unread</span>
+                <button type="submit" class="tool" name="editManga" value="markUnread">
+                    <img src="{% static 'images/unread.svg' %}" alt="">
+                </button class="tool">
+            </div>
+        </div>
+    </div>
+    <table id="chapters">
+        {% for chapter in chapters %}
+        <tr>
+            <td>
+                <input type="checkbox" value="{{chapter.id}}" name="checkbox" onchange="checkBoxChange()">
+            </td>
+            <td>
+                <a href="/read/1/{{ comic.id }}/{{ chapter.index }}">
+                    <div class="chapterLink">
+                        {% if chapter.read == True %}
+                        <p class="read" value="{{chapter.id}}">{{ chapter }}</p>
+                        {% else %}
+                        <p>{{ chapter }}</p>
+                        {% endif %}
+                    </div>
+                </a>
+            </td>
+            {% if chapter.downloaded == True %}
+            <td>
+                <p class="downloaded">Downloaded</p>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    </form>
+</div>
+
+<script type="text/javascript" src="{% static 'js/comic.js' %}"></script>
+
+{% endblock  %}
