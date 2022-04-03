@@ -17,3 +17,6 @@ Written with Python (3.8.6)
 - requests
 - bs4
 - win10toast
+
+## How to run
+Download zip and then run **py manage.py runserver**
