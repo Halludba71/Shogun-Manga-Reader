@@ -459,7 +459,7 @@ def read(response, inLibrary, comicId, chapterIndex):
                     return redirect(f"/comic/1/{comicId}") #Notification will fail if there is an existing notification
 
         return render(response, "main/read.html", {"comic": comic, "chapter": currentChapter, "images": images})
-
+    return render(response, "main/read.html", {"comic": comic, "chapter": chapter})
 def downloads(response):
     currentDownloads = download.objects.all().order_by('-id')
     if response.method == "POST":
