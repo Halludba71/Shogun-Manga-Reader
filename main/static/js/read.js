@@ -21,7 +21,6 @@ const observer = new IntersectionObserver(entries => {
 });
 
 function trackImages(){
-    console.log(currentImage);
     if( (orientation == "vertical") || (orientation == "continuous-vertical") ){
         images[currentImage].scrollIntoView(false);
     }
