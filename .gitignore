@@ -1,4 +1,5 @@
 **/__pycache__
+*.pyc
 main/Backend/extensions/__pycache__/
 shogun/__pycache__
 main/migrations/__pycache__
@@ -18,3 +19,4 @@ main/Backend/extensions/Manganato/__pycache__/source.cpython-39.pyc
 main/Backend/extensions/__pycache__/search_manga.cpython-39.pyc
 main/Backend/extensions/__pycache__/extension_list.cpython-39.pyc
 main/Backend/extensions/__pycache__/download_extensions.cpython-39.pyc
+main/__pycache__/__init__.cpython-38.pyc
