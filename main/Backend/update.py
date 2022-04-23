@@ -1,20 +1,25 @@
 from main.models import manga, extension, chapter, setting
 from main.Backend.IfOnline import connected
-from win10toast import ToastNotifier
 import time
 import sys
 import os
+
+PLATFORM = os.name
+
+if PLATFORM == "nt":
+    from win10toast import ToastNotifier
 
 def updateLibrary():
     library = manga.objects.all()
     if len(library) > 0:
         if connected():
-            toast = ToastNotifier()
-            toast.show_toast(
-                'Update is taking place',
-                "Closing the app prematurely will cause manga to be deleted",
-                duration=4,
-            )
+            if PLATFORM == "nt":
+                toast = ToastNotifier()
+                toast.show_toast(
+                    'Update is taking place',
+                    "Closing the app prematurely will cause manga to be deleted",
+                    duration=4,
+                )
             updates = []
             for comic in library:
                 if manga.objects.all().filter(id=comic.id).exists():
@@ -29,37 +34,41 @@ def updateLibrary():
                             comic.numChapters = numChapters
                             comic.save()
             if len(updates) > 0:
-                toast = ToastNotifier()
-                toast.show_toast(
-                    f'New Chapters',
-                    f"{', '.join(updates)}",
-                    duration=4,
-                )
+                if PLATFORM == "nt":
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        f'New Chapters',
+                        f"{', '.join(updates)}",
+                        duration=4,
+                    )
             if len(updates) == 0:
+                if PLATFORM == "nt":
+                    toast = ToastNotifier()
+                    toast.show_toast(
+                        f'Update Completed',
+                        f"No new chapters are available",
+                        duration=4,
+                    )
+        else:
+            if PLATFORM == "nt":
                 toast = ToastNotifier()
                 toast.show_toast(
-                    f'Update Completed',
-                    f"No new chapters are available",
+                    'Automatic Update Failed',
+                    "Make sure you are connected to the internet",
                     duration=4,
                 )
-        else:
-            toast = ToastNotifier()
-            toast.show_toast(
-                'Automatic Update Failed',
-                "Make sure you are connected to the internet",
-                duration=4,
-            )
 
 def updateChapters(comicId):
     if connected():
         comic = manga.objects.get(id=comicId)
         if comic.editing == True:
-            toast = ToastNotifier()
-            toast.show_toast(
-                f'Update for {comic.title} skipped',
-                "Manga is currently being edited",
-                duration=4,
-            )
+            if PLATFORM == "nt":
+                toast = ToastNotifier()
+                toast.show_toast(
+                    f'Update for {comic.title} skipped',
+                    "Manga is currently being edited",
+                    duration=4,
+                )
             return []
         comic.updating = True
         comic.save()
@@ -97,12 +106,13 @@ def updateChapters(comicId):
         comic.save()
         return updated
     else:
-        toast = ToastNotifier()
-        toast.show_toast(
-            'Update Failed',
-            "Make sure you are connected to the internet or try again",
-            duration=4,
-        )
+        if PLATFORM == "nt":
+            toast = ToastNotifier()
+            toast.show_toast(
+                'Update Failed',
+                "Make sure you are connected to the internet or try again",
+                duration=4,
+            )
         return -1
 
 def autoUpdate(frequency):

@@ -316,7 +316,6 @@ header:hover{
     background-color: #363738;
     margin-right: 30px;
     border: 1px solid #363738;
-    padding: 1px;
     border-radius: 6px;
     cursor: pointer;
     box-shadow: none;
@@ -332,7 +331,6 @@ header:hover{
     background-color: #363738;
     border: 1px solid #363738;
     margin-right: 30px;
-    padding: 1px;
     border-radius: 6px;
     cursor: pointer;
     box-shadow: none;
@@ -342,4 +340,8 @@ header:hover{
     transition: 0.2s ease-in;
     border: 1px solid #262729;
     background-color: #262729;
+}
+
+.chapterNavigation{
+    color: floralwhite;
 }

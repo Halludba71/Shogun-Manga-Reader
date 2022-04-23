@@ -1,5 +1,6 @@
 from main.models import manga, chapter, mangaCategory, category
 from main.Backend.IfOnline import connected
+from pathlib import Path
 import requests
 import hashlib
 import os
@@ -13,9 +14,9 @@ def newManga(ext, chapters, metaData):
     if connected() == True:
         try:
             request = requests.get(metaData["cover"])
-            fileName = "covers/" + hashlib.md5(request.content).hexdigest() + metaData["cover"][ len(metaData["cover"]) -4::]
-            path = f"{os.getcwd()}/main/static/"
-            with open(path+fileName, "wb") as cover:
+            fileName = os.path.join("covers", hashlib.md5(request.content).hexdigest() + metaData["cover"][ len(metaData["cover"]) -4::])
+            path = Path.cwd() / "main" / "static"
+            with open(path / fileName, "wb") as cover:
                 cover.write(request.content)
         except:
             return -1

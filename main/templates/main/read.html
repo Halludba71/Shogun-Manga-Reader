@@ -20,7 +20,8 @@
         {% if chapter.index > 1 %}
         <button class="previousChapter">
             <a href="/read/1/{{ comic.id}}/{{ chapter.index|add:"-1"}}">
-                <img src="{% static 'images/back.png' %}" width="32" height="30" alt="">
+                {% comment %} <img src="{% static 'images/back.png' %}" width="32" height="30" alt=""> {% endcomment %}
+                <h4 class="chapterNavigation">Previous</h4>
             </a>
         </button>
         {% endif %}
@@ -28,7 +29,8 @@
         {% if chapter.index < comic.numChapters %}
         <button class="nextChapter">
             <a href="/read/1/{{ comic.id }}/{{ chapter.index|add:"1"}}">
-                <img src="{% static 'images/next.png' %}" width="32" height="30" alt="">
+                {% comment %} <img src="{% static 'images/next.png' %}" width="32" height="30" alt=""> {% endcomment %}
+                <h4 class="chapterNavigation">Next</h4>
             </a>
         </button>
         {% endif %}

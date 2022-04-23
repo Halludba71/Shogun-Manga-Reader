@@ -1,6 +1,6 @@
+from main.models import extension
 import requests
 import os
-from main.models import extension
 
 def download_extension(extension_data):
     try:

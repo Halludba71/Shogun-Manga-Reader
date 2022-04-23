@@ -1,9 +1,9 @@
-from django.urls import path
-from main.models import setting
-from main.Backend.cleanDatabase import checkDatabase
 from main.Backend.update import autoUpdate, updateOnStart
-import threading
+from main.Backend.cleanDatabase import checkDatabase
+from main.models import setting
+from django.urls import path
 from . import views
+import threading
 
 urlpatterns = [
     path("", views.redirect_view, name="redirect"),
