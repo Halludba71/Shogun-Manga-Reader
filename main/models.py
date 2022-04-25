@@ -1,6 +1,5 @@
 from email.policy import default
 from django.db import models
-import json
 # Create your models here.
 
 """
@@ -25,8 +24,6 @@ class manga(models.Model):
 	leftToRead = models.IntegerField()
 	updating = models.BooleanField(default=False)
 	editing = models.BooleanField(default=False)
-	def chapters_to_arr(self):
-		return json.loads(self.chapters)
 		
 	def __str__(self):
 		return self.title

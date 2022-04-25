@@ -1,5 +1,3 @@
-from pydoc import plain
-from tkinter import Place
 from .models import manga, extension, chapter, download, setting, category, mangaCategory
 from main.Backend.extensions.download_extensions import download_extension
 from django.http import HttpResponse, JsonResponse
