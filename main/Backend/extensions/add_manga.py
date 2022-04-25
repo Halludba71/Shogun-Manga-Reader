@@ -10,14 +10,14 @@ def newManga(ext, chapters, metaData):
     # import source
     print(metaData["url"])
     numChapters = len(chapters)
-    ## TODO: download Image
     if connected() == True:
         try:
             request = requests.get(metaData["cover"])
             fileName = os.path.join("covers", hashlib.md5(request.content).hexdigest() + metaData["cover"][ len(metaData["cover"]) -4::])
             path = Path.cwd() / "main" / "static"
-            with open(path / fileName, "wb") as cover:
-                cover.write(request.content)
+            if not os.path.exists(path / fileName): #there would be a collision if the same image is already saved, only save if it doesnt exist
+                with open(path / fileName, "wb") as cover:
+                    cover.write(request.content)
         except:
             return -1
     else:
