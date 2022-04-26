@@ -29,5 +29,3 @@ def search(SearchQuery):
                 duration=3,
             )
     return results
-# def search(Query):
-#     print(os.getcwd())

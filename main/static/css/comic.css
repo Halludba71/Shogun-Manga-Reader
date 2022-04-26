@@ -1,13 +1,4 @@
 
-
-/* .center{
-    margin: auto;
-    width: 60%;
-    /* background-color: #141418; */
-    /* border: 5px solid #FFFF00; */
-    /* padding: 10px;
-} */
-
 .manga-cover{
     float: left;
     border-radius: 10px;
@@ -15,15 +6,10 @@
 }
 
 .manga-name{
-    /* padding:20px;
-    padding-right: 200px; */
-
-    /* padding-bottom: 50px; */
     padding-top: 20px;
 }
 
 .manga-info{
-    /* overflow: hidden; */
     margin: auto;
     padding: 20px;
     max-width: 75%;
@@ -32,7 +18,6 @@
 }
 
 .manga-chapters{
-    /* overflow: hidden; */
     margin: auto;
     padding: 20px;
     max-width: 75%;
@@ -89,7 +74,6 @@ button:hover.tool{
 }
 
 .top-row{
-    /* display:inline; */
     white-space: nowrap;
 
 }
