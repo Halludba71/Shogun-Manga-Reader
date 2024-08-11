@@ -1,5 +1,5 @@
 # Shogun-Manga-Reader
-Shogun is a Manga Reader Web App created for my A level Coursework.
+Shogun is a Manga Reader Web App created to provide an alternative to online reading on the desktop platform. 
 Features will try to remain similar to Tachiyomi
 
 ## Current Features
